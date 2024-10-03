@@ -1,4 +1,4 @@
-package com.example.Elden.Ring.request;
+package com.example.Elden.Ring.DTO.request;
 
 import lombok.*;
 
@@ -11,4 +11,6 @@ public class UserCreateRequest {
     private String userId;
     private String password;
     private String email;
+
+
 }

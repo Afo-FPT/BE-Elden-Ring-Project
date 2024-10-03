@@ -2,7 +2,7 @@ package com.example.Elden.Ring.service;
 
 import com.example.Elden.Ring.entity.User;
 import com.example.Elden.Ring.repository.UserRepository;
-import com.example.Elden.Ring.request.UserCreateRequest;
+import com.example.Elden.Ring.DTO.request.UserCreateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,4 +20,7 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+
+
 }

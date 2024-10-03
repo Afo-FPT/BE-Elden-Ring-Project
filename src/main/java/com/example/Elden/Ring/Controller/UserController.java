@@ -1,6 +1,6 @@
 package com.example.Elden.Ring.Controller;
 
-import com.example.Elden.Ring.request.UserCreateRequest;
+import com.example.Elden.Ring.DTO.request.UserCreateRequest;
 import com.example.Elden.Ring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,4 +18,5 @@ public class UserController {
         userService.create(request);
         return "created";
     }
+
 }

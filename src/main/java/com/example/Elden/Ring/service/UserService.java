@@ -1,8 +1,11 @@
 package com.example.Elden.Ring.service;
 
+import com.example.Elden.Ring.dto.request.UserCreateRequest;
 import com.example.Elden.Ring.entity.User;
+import com.example.Elden.Ring.exception.AppException;
+import com.example.Elden.Ring.exception.ErrorCode;
 import com.example.Elden.Ring.repository.UserRepository;
-import com.example.Elden.Ring.request.UserCreateRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +14,16 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public void create(UserCreateRequest userCreateRequest){
+    public User create(UserCreateRequest userCreateRequest){
+
         User user = User.builder()
-                .userId(userCreateRequest.getUserId())
+                .username(userCreateRequest.getUsername())
                 .password(userCreateRequest.getPassword())
                 .email(userCreateRequest.getEmail())
                 .build();
+        if(userRepository.existsByUsername(userCreateRequest.getUsername()))
+            throw new AppException(ErrorCode.USER_EXISTED);
 
-        userRepository.save(user);
+       return userRepository.save(user);
     }
 }

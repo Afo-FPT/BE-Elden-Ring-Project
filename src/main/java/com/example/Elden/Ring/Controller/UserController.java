@@ -1,7 +1,10 @@
 package com.example.Elden.Ring.Controller;
 
-import com.example.Elden.Ring.request.UserCreateRequest;
+import com.example.Elden.Ring.dto.request.UserCreateRequest;
+import com.example.Elden.Ring.dto.respnse.ApiResponse;
+import com.example.Elden.Ring.entity.User;
 import com.example.Elden.Ring.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +20,11 @@ public class UserController {
     @CrossOrigin  //cross port
 
     @PostMapping("/create-user")
-        String create ( @RequestBody UserCreateRequest request){
-            userService.create(request);
-            return "created";
+    ApiResponse<User> create(@RequestBody @Valid UserCreateRequest request){
+        ApiResponse<User> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.create(request));
+
+        return apiResponse;
+
         }
 }

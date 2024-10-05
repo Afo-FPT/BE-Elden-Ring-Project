@@ -22,11 +22,12 @@ public class UserController {
     @CrossOrigin  //cross port
 
     @PostMapping("/create-user")
-    ApiResponse<User> create(@RequestBody @Valid UserCreateRequest request){
-        ApiResponse<User> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userService.create(request));
+    ApiResponse<User> create(@RequestBody @Valid UserCreateRequest createRequest){
 
-        return apiResponse;
+    return ApiResponse.<User>builder()
+            .result(userService.create(createRequest))
+            .build();
+
 
         }
     @ExceptionHandler(RuntimeException.class)

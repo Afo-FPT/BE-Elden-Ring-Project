@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UserCreateRequest {
+
     private String userId;
 
     @Size(min = 3, message = "USERNAME_INVALID")
@@ -20,4 +21,8 @@ public class UserCreateRequest {
 
     @Email(message = "email is not valid")
     private String email;
+
+    private String fullName;
+    private String role;
+    private String phone;
 }

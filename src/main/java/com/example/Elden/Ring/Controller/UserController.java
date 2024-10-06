@@ -30,8 +30,5 @@ public class UserController {
 
 
         }
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
-    }
+
 }

@@ -19,20 +19,38 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String userId;
-    String username;
-    String password;
-    String fullname;
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
-    @Column(name = "email",unique = true, columnDefinition = "VARCHAR(255)")
-    String email;
-    String phone;
-    String role;
+    private String username;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Order> orders;
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Blog> blogs;
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column(name = "role")
+    private String role;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "phone", unique = true)
+    private String phone;
+
+    @Column(name = "email", unique = true)
+    private String email;
+
+    @OneToMany(mappedBy = "userid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Blog> blogs;
+
+    @OneToMany(mappedBy = "userid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Order> orders;
+
+    @OneToOne(mappedBy = "userid",fetch = FetchType.LAZY)
+    private Cart cartId;
+
+    @OneToMany(mappedBy = "userid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product> products;
+
+    @OneToMany(mappedBy = "userid", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Feedback> feedbacks;
 }

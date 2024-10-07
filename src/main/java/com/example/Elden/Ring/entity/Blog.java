@@ -1,6 +1,7 @@
 package com.example.Elden.Ring.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,14 +18,23 @@ import lombok.experimental.FieldDefaults;
 public class Blog {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String blogId;
-    @Column(name = "blogImage", columnDefinition ="VARCHAR(MAX)" )
-    String blogImage;
-    String title;
-    String description;
+    @Column(name = "blog-Id", nullable = false, unique = true)
+    private String blogId;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "content", nullable = false)
+    private String content;
+
+    @Column(name = "Blog_Image", nullable = false)
+    private String blogImage;
 
     @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_Id")
+    private User userid;
 }

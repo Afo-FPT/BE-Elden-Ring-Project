@@ -19,11 +19,12 @@ import java.util.List;
 public class ProSize {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String sizeId;
+    @Column(name = "size_id", nullable = false, unique = true)
+    private String sizeId;
 
-    String size;
-    @JsonManagedReference
-    @OneToMany(mappedBy = "size", cascade = CascadeType.ALL)
-    List<Product_Size> product_size;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 
+    @OneToMany(mappedBy = "proSize", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product_Size> product_sizes;
 }

@@ -1,10 +1,12 @@
 package com.example.Elden.Ring.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -19,10 +21,16 @@ import java.util.List;
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String cartId;
+    @Column(name = "cart_id", nullable = false, unique = true)
+    private String cartId;
 
-    Long userId;
-    Double price;
+    @Column(name = "total_price")
+    private BigDecimal totalPrice;
+
+    @JsonBackReference
+    @OneToOne
+    @JoinColumn(name = "userid")
+    private User userid;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)

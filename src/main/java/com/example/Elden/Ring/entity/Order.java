@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,19 +23,29 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String orderId;
+    @Column(name = "order_id", nullable = false, unique = true)
+    private String orderId;
 
-    Double total;
-    LocalDateTime createDate;
-    String status;
+    @Column(name = "status", nullable = false, unique = true)
+    private String status;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    List<Order_Product> order_products;
+    @Column(name = "created_date", nullable = false)
+    private LocalDate createdDate;
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    User user;
+    @Column(name = "total_price", nullable = false)
+    private BigDecimal totalPrice;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consumer_id", nullable = false)
+    private User userid;
+
+//    @ManyToMany(mappedBy = "orders", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Product> products;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Order_Product> order_products;  // Liên kết tới Enrollment
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductReturn> productReturns;
 
 }

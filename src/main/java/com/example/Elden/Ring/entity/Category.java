@@ -18,14 +18,15 @@ import java.util.List;
 @Table(name = "Categories")
 public class Category {
     @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
-    Long cateId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "category_id", nullable = false)
+    private String cateId;
 
-    String cateName;
+    @Column(name = "category_name", nullable = false)
+    private String cateName;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    List<Product> products;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Product> products;
 
 
 }

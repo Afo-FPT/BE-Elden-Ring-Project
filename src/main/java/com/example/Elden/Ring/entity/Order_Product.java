@@ -20,14 +20,13 @@ public class Order_Product {
     String orderProductId;
     int quantity;
 
-    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "productId")
-    Product product;
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-    @JsonBackReference
+    @Id
     @ManyToOne
-    @JoinColumn(name = "orderId")
-    Order order;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
 }

@@ -19,13 +19,15 @@ public class Product_Size {
     @GeneratedValue(strategy = GenerationType.UUID)
     String productSizeId;
 
-    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "productId")
-    Product product;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-    @JsonBackReference
+    @Id
     @ManyToOne
-    @JoinColumn(name = "sizeId")
-    ProSize size;
+    @JoinColumn(name = "product_size")
+    private ProSize proSize;
+
+    @Column(name = "quantity")
+    private Integer quantity;
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -20,27 +21,55 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String productId;
+    @Column(name = "product_id", nullable = false, unique = true)
+    private String productId;
 
-    String productName;
-    String description;
-    Double price;
-    String productImage;
-    String status;
-    Integer stock;
+    @Column(name = "product_name", nullable = false)
+    private String productName;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    List<Order_Product> Order_Products;
+    @Column(name = "product_size", nullable = false)
+    private String productSize;
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "cateId")
-    Category category;
+    @Column(name = "product_description", nullable = false)
+    private String productDescription;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    List<Product_Size> Product_Size;
+    @Column(name = "status", nullable = false)
+    private String status;
 
+    @Column(name = "image", nullable = false)
+    private String image;
 
+    @Column(name = "in_stock", nullable = false)
+    private Integer inStock;
+
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User userid;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinTable(
+//            name = "product_order",  // Tên bảng trung gian
+//            joinColumns = @JoinColumn(name = "product_id"),  // Khóa ngoại tham chiếu tới bảng Product
+//            inverseJoinColumns = @JoinColumn(name = "order_id")  // Khóa ngoại tham chiếu tới bảng Order
+//    )
+//    private List<Order> orders;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Order_Product> order_products;  // Liên kết tới Order Item
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product_Size> product_sizes; // Liên kết tới Product Detail
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Feedback> feedbacks;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductReturn> productReturns;
 }

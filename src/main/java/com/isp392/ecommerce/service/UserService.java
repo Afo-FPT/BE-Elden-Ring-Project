@@ -59,7 +59,6 @@ public class UserService {
 
     public User updateUser(String id, UserUpdateRequest request) {
         User user = getUserById(id);
-
         user.setFullName(request.getFullName());
         user.setPassword(request.getPassword());
         user.setPhone(request.getPhone());

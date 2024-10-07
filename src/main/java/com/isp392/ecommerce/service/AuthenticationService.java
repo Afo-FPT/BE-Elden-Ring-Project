@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
@@ -53,13 +55,14 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOTEXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_OR_PASSWORD_WRONG));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated =  passwordEncoder.matches(request.getPassword(),
                 user.getPassword());
+
         if(!authenticated)
-            throw new AppException(ErrorCode.UNCATEGORIZED);
+            throw new AppException(ErrorCode.USERNAME_OR_PASSWORD_WRONG);
         var token = generateToken(request.getUsername());
         return AuthenticationResponse.builder()
                 .token(token)
@@ -75,7 +78,7 @@ public class AuthenticationService {
                 .issuer("FPTU.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        LocalDate.now().plus(1, ChronoUnit.YEARS).toEpochDay()
                 ))
                 .claim("customClaim", "custom")
                 .build();

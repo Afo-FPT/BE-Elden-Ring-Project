@@ -16,7 +16,8 @@ public enum ErrorCode {
     EMAIL_EXISTED(1005, "email already exist, use another email!"),
     USER_NOTEXISTED(1006, "user not exist"),
     UNAUTHENTICATED(1007, "unauthenticated!"),
-    USERNAME_OR_PASSWORD_WRONG(1002 ,"Invalid username or password!")
+    USERNAME_OR_PASSWORD_WRONG(1002 ,"Invalid username or password!"),
+    WRONG_EMAIL_FORMAT(1008, "Email format is incorrect!")
     ;
 
     ErrorCode(int code, String message) {

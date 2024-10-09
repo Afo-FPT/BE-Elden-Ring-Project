@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,8 +23,8 @@ public class UserCreationRequest {
     @Email(message = "WRONG_EMAIL_FORMAT")
     private String email;
     private String fullName;
-    private String role;
+    private Set<String> role;
     private String phone;
 
-    private Cart cartId;
+
 }

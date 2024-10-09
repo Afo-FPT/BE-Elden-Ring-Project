@@ -1,7 +1,5 @@
 package com.isp392.ecommerce.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +15,11 @@ public enum ErrorCode {
     USER_NOTEXISTED(1006, "user not exist"),
     UNAUTHENTICATED(1007, "unauthenticated!"),
     USERNAME_OR_PASSWORD_WRONG(1002 ,"Invalid username or password!"),
-    WRONG_EMAIL_FORMAT(1008, "Email format is incorrect!")
+    WRONG_EMAIL_FORMAT(1008, "Email format is incorrect!"),
+    FULLNAMEEMPTY(1009, "fullname must not be empty!"),
+    PHONEEMPTY(1010,"phone number must not be empty"),
+    ADDRESSEMPTY(1011, "address must not be empty!"),
+    PHONEEXISTED(1012, "this phone number is already exist!"),
     ;
 
     ErrorCode(int code, String message) {

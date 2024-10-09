@@ -1,6 +1,8 @@
 package com.isp392.ecommerce.entity;
 
 import java.util.List;
+import java.util.Set;
+
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -25,8 +27,8 @@ public class User {
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "role")
-    private String role;
+    @Column(name = "role", unique = true)
+    private Set<String> role;
 
     @Column(name = "password")
     private String password;
@@ -36,6 +38,9 @@ public class User {
 
     @Column(name = "email", unique = true)
     private String email;
+
+    @Column(name = "address")
+    private String address;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Blog> blogs;

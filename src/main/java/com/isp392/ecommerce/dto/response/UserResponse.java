@@ -2,6 +2,8 @@ package com.isp392.ecommerce.dto.response;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -12,12 +14,12 @@ public class UserResponse {
     private String userId;
     private String username;
 
-    private String password;
 
 
     private String email;
 
     private String fullName;
-    private String role;
+    private  Set<String> role;
     private String phone;
+    private String address;
 }

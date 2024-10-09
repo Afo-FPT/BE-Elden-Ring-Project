@@ -10,8 +10,7 @@ import lombok.*;
 @EqualsAndHashCode
 
 public class UserUpdateRequest {
-    private String password;
-    private String email;
     private String fullName;
     private String phone;
+    private String address;
 }

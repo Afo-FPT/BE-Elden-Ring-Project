@@ -4,6 +4,7 @@ package com.isp392.ecommerce.service;
 import com.isp392.ecommerce.dto.request.UserCreationRequest;
 import com.isp392.ecommerce.dto.request.UserUpdateRequest;
 import com.isp392.ecommerce.entity.User;
+import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
 import com.isp392.ecommerce.mapper.UserMapper;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 //return type
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -34,6 +36,8 @@ public class UserService {
     }
 
     public User create(UserCreationRequest createRequest) {
+        if(userRepository.existsByPhone(createRequest.getPhone()))
+            throw new AppException(ErrorCode.PHONEEXISTED);
         if (userRepository.existsByUsername(createRequest.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
         if (userRepository.existsByEmail(createRequest.getEmail()))
@@ -41,16 +45,27 @@ public class UserService {
         User user = userMapper.toUser(createRequest);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(createRequest.getPassword()));
+
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.CUSTOMER.name());
+        user.setRole(roles);
+
         return userRepository.save(user);
     }
 
 
     public User updateUser(String id, UserUpdateRequest request) {
+
         User user = getUserById(id);
-        user.setFullName(request.getFullName());
-        user.setPassword(request.getPassword());
-        user.setPhone(request.getPhone());
-        user.setEmail(request.getEmail());
+        if(!(request.getFullName().isEmpty() || request.getFullName().isBlank())){
+            user.setFullName(request.getFullName());
+        }else throw new AppException(ErrorCode.FULLNAMEEMPTY);
+        if(!(request.getPhone().isEmpty() || request.getPhone().isBlank())){
+            user.setPhone(request.getPhone());
+        }else throw new AppException(ErrorCode.PHONEEMPTY);
+        if(!(request.getAddress().isEmpty() || request.getAddress().isBlank())){
+            user.setAddress(request.getAddress());
+        }else throw new AppException(ErrorCode.ADDRESSEMPTY);
 
         return userRepository.save(user);
     }

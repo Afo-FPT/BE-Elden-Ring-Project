@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
-    UserRepository userRepository;
+    @Autowired
+            private UserRepository userRepository;
 
     @NonFinal
     protected  static final String  SIGNER_KEY ="HDnx6daMHWmuu/rgl5B2F4FblmUXUwgwaP8N4UEQ1yAWqPb2SW/FeFVkCMwgMlqT";

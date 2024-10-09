@@ -43,19 +43,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(createRequest.getPassword()));
         return userRepository.save(user);
     }
-    //CHÚ Ý
-//    public User createUser(UserCreationRequest request) {
-//        User user = new User();
-//        user.setFullName(request.getFullName());
-//        user.setUsername(request.getUsername());
-//        user.setRole(request.getRole());
-//        user.setPassword(request.getPassword());
-//        user.setPhone(request.getPhone());
-//        user.setEmail(request.getEmail());
-//        user.setCartId(request.getCartId());
-//
-//        return userRepository.save(user);
-//    }
+
 
     public User updateUser(String id, UserUpdateRequest request) {
         User user = getUserById(id);

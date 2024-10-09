@@ -81,7 +81,7 @@ public class AuthenticationService {
                 .issuer("FPTU.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        LocalDate.now().plus(1, ChronoUnit.YEARS).toEpochDay()
+                        Instant.now().plus(365, ChronoUnit.DAYS).toEpochMilli()
                 ))
                 .claim("customClaim", "custom")
                 .build();

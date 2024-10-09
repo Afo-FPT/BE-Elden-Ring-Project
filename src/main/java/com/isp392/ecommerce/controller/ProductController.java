@@ -35,7 +35,4 @@ public class ProductController {
 //                .build();
     }
 
-//    public User updateUser(@PathVariable("id") String userId, @RequestBody UserUpdateRequest request) {
-//        return userService.updateUser(userId, request);
-//    }
-//}
+

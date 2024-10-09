@@ -28,7 +28,7 @@ public class UserController {
 
     @CrossOrigin  //cross port
 
-    @PostMapping
+    @PostMapping("/create-user")
     ApiResponse<User> create(@RequestBody @Valid UserCreationRequest createRequest) {
         return ApiResponse.<User>builder()
                 .result(userService.create(createRequest))

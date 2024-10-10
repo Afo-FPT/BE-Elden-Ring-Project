@@ -20,6 +20,6 @@ public class UserResponse {
 
     private String fullName;
     private  Set<String> role;
-    private String phone;
+//    private String phone;
     private String address;
 }

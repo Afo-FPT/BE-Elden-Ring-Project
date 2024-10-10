@@ -4,6 +4,7 @@ package com.isp392.ecommerce.controller;
 import com.isp392.ecommerce.dto.request.UserCreationRequest;
 import com.isp392.ecommerce.dto.request.UserUpdateRequest;
 import com.isp392.ecommerce.dto.response.ApiResponse;
+import com.isp392.ecommerce.dto.response.UserResponse;
 import com.isp392.ecommerce.entity.User;
 import com.isp392.ecommerce.service.UserService;
 
@@ -29,8 +30,8 @@ public class UserController {
     @CrossOrigin  //cross port
 
     @PostMapping("/create-user")
-    ApiResponse<User> create(@RequestBody @Valid UserCreationRequest createRequest) {
-        return ApiResponse.<User>builder()
+    ApiResponse<UserResponse> create(@RequestBody @Valid UserCreationRequest createRequest) {
+        return ApiResponse.<UserResponse>builder()
                 .result(userService.create(createRequest))
                 .build();
     }

@@ -3,6 +3,7 @@ package com.isp392.ecommerce.service;
 
 import com.isp392.ecommerce.dto.request.UserCreationRequest;
 import com.isp392.ecommerce.dto.request.UserUpdateRequest;
+import com.isp392.ecommerce.dto.response.UserResponse;
 import com.isp392.ecommerce.entity.User;
 import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.exception.AppException;
@@ -35,13 +36,15 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User create(UserCreationRequest createRequest) {
-        if(userRepository.existsByPhone(createRequest.getPhone()))
-            throw new AppException(ErrorCode.PHONEEXISTED);
+    public UserResponse create(UserCreationRequest createRequest) {
         if (userRepository.existsByUsername(createRequest.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
+
         if (userRepository.existsByEmail(createRequest.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
+//        if(userRepository.existsByPhone(createRequest.getPhone()))
+//            throw new AppException(ErrorCode.PHONEEXISTED);
+
         User user = userMapper.toUser(createRequest);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(createRequest.getPassword()));
@@ -50,7 +53,7 @@ public class UserService {
 //        roles.add(Role.CUSTOMER.name());
 //        user.setRole(roles);
 
-        return userRepository.save(user);
+        return userMapper.toUserResponse(user);
     }
 
 

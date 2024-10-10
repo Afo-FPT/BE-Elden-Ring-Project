@@ -52,8 +52,8 @@ public class UserService {
 //        HashSet<String> roles = new HashSet<>();
 //        roles.add(Role.CUSTOMER.name());
 //        user.setRole(roles);
-
-        return userMapper.toUserResponse(user);
+        userRepository.save(user);
+         return userMapper.toUserResponse(user);
     }
 
 

@@ -26,10 +26,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+//cross port
 
-    @CrossOrigin  //cross port
-
-    @PostMapping("/create-user")
+    @PostMapping("/signup")
     ApiResponse<UserResponse> create(@RequestBody @Valid UserCreationRequest createRequest) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.create(createRequest))

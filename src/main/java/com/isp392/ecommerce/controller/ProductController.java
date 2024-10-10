@@ -19,7 +19,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @CrossOrigin
+
 
     @PostMapping("/createProduct")
     ApiResponse<Product> create(@RequestBody @Valid ProductCreateRequest productCreateRequest) {

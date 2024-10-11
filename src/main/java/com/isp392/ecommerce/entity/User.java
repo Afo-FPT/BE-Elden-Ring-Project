@@ -28,7 +28,7 @@ public class User {
     private String fullName;
 
     @Column(name = "role", unique = true)
-    private Set<String> role;
+    private String role;
 
     @Column(name = "password")
     private String password;

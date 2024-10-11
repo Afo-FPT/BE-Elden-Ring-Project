@@ -6,6 +6,7 @@ import com.isp392.ecommerce.dto.response.AuthenticationResponse;
 import com.isp392.ecommerce.dto.response.IntrospectResponse;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
+import com.isp392.ecommerce.mapper.UserMapper;
 import com.isp392.ecommerce.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -34,6 +35,8 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
+
+    UserMapper userMapper;
 
     @NonFinal
     protected  static final String  SIGNER_KEY ="HDnx6daMHWmuu/rgl5B2F4FblmUXUwgwaP8N4UEQ1yAWqPb2SW/FeFVkCMwgMlqT";
@@ -67,9 +70,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .username(user.getUsername())
+                .userResponse(userMapper.toUserResponse(user))
                 .build();
 
     }

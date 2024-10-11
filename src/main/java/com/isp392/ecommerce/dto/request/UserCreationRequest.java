@@ -23,7 +23,7 @@ public class UserCreationRequest {
     @Email(message = "WRONG_EMAIL_FORMAT")
     private String email;
     private String fullName;
-    private Set<String> role;
+    private String role;
 //    private String phone;
 
 

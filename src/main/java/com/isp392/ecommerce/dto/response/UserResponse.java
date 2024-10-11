@@ -19,7 +19,7 @@ public class UserResponse {
     private String email;
 
     private String fullName;
-    private  Set<String> role;
+    private  String role;
 //    private String phone;
 
 }

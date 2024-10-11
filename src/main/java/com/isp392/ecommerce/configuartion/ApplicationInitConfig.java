@@ -3,6 +3,7 @@ package com.isp392.ecommerce.configuartion;
 import com.isp392.ecommerce.entity.User;
 import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 
+@Slf4j
 @Configuration
 public class ApplicationInitConfig {
 
@@ -21,14 +23,14 @@ public class ApplicationInitConfig {
     ApplicationRunner applicationRunner(UserRepository userRepository){
         return args -> {
                if(userRepository.findByUsername("admin").isEmpty()){
-                   var roles = new HashSet<String>();
-                   roles.add(Role.ADMIN.name());
+
                    User user = User.builder()
                            .username("admin")
                            .password(passwordEncoder.encode("admin"))
-                           .role(roles)
+                           .role(Role.ADMIN.toString())
                            .build();
-
+                    userRepository.save(user);
+                    log.info("admin account create success");
 
                }
 

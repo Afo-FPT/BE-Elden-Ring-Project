@@ -39,7 +39,7 @@ public class Product {
     private Integer inStock;
 
     @Column(name = "price")
-    private BigDecimal price;
+    private Float price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

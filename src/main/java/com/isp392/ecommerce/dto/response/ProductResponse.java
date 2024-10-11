@@ -18,5 +18,6 @@ public class ProductResponse {
     String productDescription;
     String status;
     int inStock;
-    BigDecimal price;
+    float price;
+
 }

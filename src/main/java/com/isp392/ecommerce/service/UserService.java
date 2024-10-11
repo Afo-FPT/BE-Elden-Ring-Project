@@ -49,11 +49,11 @@ public class UserService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(createRequest.getPassword()));
 
-//        HashSet<String> roles = new HashSet<>();
-//        roles.add(Role.CUSTOMER.name());
-//        user.setRole(roles);
-        userRepository.save(user);
-         return userMapper.toUserResponse(user);
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.CUSTOMER.name());
+        user.setRole(roles);
+
+         return userMapper.toUserResponse(userRepository.save(user));
     }
 
 
@@ -76,4 +76,6 @@ public class UserService {
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
+
+
 }

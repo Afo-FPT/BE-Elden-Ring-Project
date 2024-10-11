@@ -20,6 +20,8 @@ public enum ErrorCode {
     PHONEEMPTY(1010,"phone number must not be empty"),
     ADDRESSEMPTY(1011, "address must not be empty!"),
     PHONEEXISTED(1012, "this phone number is already exist!"),
+    PRODUCTNOTEXIST(1013,"product not exist"),
+    BLANKINFO(1014,"information must not be blank")
     ;
 
     ErrorCode(int code, String message) {

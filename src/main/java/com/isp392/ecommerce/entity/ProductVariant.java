@@ -9,21 +9,23 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
-
 @Entity
-@Table(name = "cart_product")
-public class Cart_Product {
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+@Table(name = "product_variants")
+public class ProductVariant {
 
     @Id
+    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String productVariantId;
+
+    @ManyToOne
+    @JoinColumn(name = "size_id")
+    private Size size;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    private int quantity;
 }
-

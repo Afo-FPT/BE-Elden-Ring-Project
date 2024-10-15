@@ -19,15 +19,8 @@ public class Size {
     @Column(name = "size_id", nullable = false, unique = true)
     private String sizeId;
 
-    @Column(name = "chest")
-    private Double chest;
-
-    @Column(name = "hip")
-    private Double hip;
-
-    @Column(name = "length")
-    private Double length;
+    private String name;
 
     @OneToMany(mappedBy = "size", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product_Size> productSizes;
+    private List<ProductVariant> productSizes;
 }

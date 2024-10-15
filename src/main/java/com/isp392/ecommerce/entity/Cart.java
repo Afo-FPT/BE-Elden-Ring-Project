@@ -1,8 +1,13 @@
 package com.isp392.ecommerce.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -17,16 +22,21 @@ import java.util.List;
 public class Cart {
 
     @Id
+    @Column(name = "cartId", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "cart_id", nullable = false, unique = true)
-    private String cartId;
+    String cartId;
 
-    @Column(name = "total_price")
-    private BigDecimal totalPrice;
+    @JsonBackReference
+    @OneToOne
+    @JoinColumn(name = "userId")
+    User user;
 
-    @OneToOne(mappedBy = "cartId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private User user;
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "createDate")
+    Date createDate;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Cart_Product> cartProducts;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<CartItem> cartItems;
 }

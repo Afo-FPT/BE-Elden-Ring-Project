@@ -12,8 +12,8 @@ import jakarta.persistence.*;
 @EqualsAndHashCode
 
 @Entity
-@Table(name = "order_product")
-public class Order_Product {
+@Table(name = "order_details")
+public class OrderDetail {
 
     @Id
     @ManyToOne

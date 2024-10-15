@@ -56,18 +56,19 @@ public class UserService {
 
     public User updateUser(String id, UserUpdateRequest request) {
 
-        User user = getUserById(id);
-        if(!(request.getFullName().isEmpty() || request.getFullName().isBlank())){
-            user.setFullName(request.getFullName());
-        }else throw new AppException(ErrorCode.FULLNAMEEMPTY);
-        if(!(request.getPhone().isEmpty() || request.getPhone().isBlank())){
-            user.setPhone(request.getPhone());
-        }else throw new AppException(ErrorCode.PHONEEMPTY);
-        if(!(request.getAddress().isEmpty() || request.getAddress().isBlank())){
-            user.setAddress(request.getAddress());
-        }else throw new AppException(ErrorCode.ADDRESSEMPTY);
-
-        return userRepository.save(user);
+//        User user = getUserById(id);
+//        if(!(request.getFullName().isEmpty() || request.getFullName().isBlank())){
+//            user.setFullName(request.getFullName());
+//        }else throw new AppException(ErrorCode.FULLNAMEEMPTY);
+//        if(!(request.getPhone().isEmpty() || request.getPhone().isBlank())){
+//            user.setPhone(request.getPhone());
+//        }else throw new AppException(ErrorCode.PHONEEMPTY);
+//        if(!(request.getAddress().isEmpty() || request.getAddress().isBlank())){
+//            user.setAddress(request.getAddress());
+//        }else throw new AppException(ErrorCode.ADDRESSEMPTY);
+//
+//        return userRepository.save(user);
+        return null;
     }
 
     public void deleteUser(String id) {

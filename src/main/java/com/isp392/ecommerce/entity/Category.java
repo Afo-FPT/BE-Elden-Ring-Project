@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
-
 @Entity
 @Table(name = "categories")
 public class Category {

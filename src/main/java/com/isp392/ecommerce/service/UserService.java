@@ -59,6 +59,12 @@ public class UserService {
         return userMapper.toUserResponse(getCurrentUser());
     }
 
+    public UserResponse updateMyInfo(UserUpdateRequest updateRequest) {
+        User user = getCurrentUser();
+        userMapper.updateUser(user, updateRequest);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
     public User updateUser(String id, UserUpdateRequest request) {
 
 //        User user = getUserById(id);

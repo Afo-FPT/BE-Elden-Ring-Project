@@ -43,6 +43,13 @@ public class UserController {
                 .build();
     }
 
+    @PutMapping("/update-my-info")
+    ApiResponse<UserResponse> updateMyInfo(@RequestBody UserUpdateRequest updateRequest) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateMyInfo(updateRequest))
+                .build();
+    }
+
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();

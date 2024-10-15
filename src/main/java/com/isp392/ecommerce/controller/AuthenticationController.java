@@ -2,6 +2,7 @@ package com.isp392.ecommerce.controller;
 
 import com.isp392.ecommerce.dto.request.AuthenticationRequest;
 import com.isp392.ecommerce.dto.request.IntrospectRequest;
+import com.isp392.ecommerce.dto.request.LogOutRequest;
 import com.isp392.ecommerce.dto.response.ApiResponse;
 import com.isp392.ecommerce.dto.response.AuthenticationResponse;
 import com.isp392.ecommerce.dto.response.IntrospectResponse;
@@ -39,6 +40,14 @@ public class AuthenticationController {
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
 
+                .build();
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout(@RequestBody LogOutRequest request) throws ParseException, JOSEException {
+        authenticationService.logOut(request);
+        return ApiResponse.<Void>builder()
+                .message("Logged out successfully")
                 .build();
     }
 }

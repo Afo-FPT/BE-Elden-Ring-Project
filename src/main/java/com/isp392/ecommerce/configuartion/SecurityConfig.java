@@ -20,14 +20,16 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINT = {"/users",
             "/auth/login",
-            "/auth/introspect"
-            ,
+            "/auth/introspect",
+            "/category/**",
+            "/size/**",
+            "/product/**",
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
+                request.requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->

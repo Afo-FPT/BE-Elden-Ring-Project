@@ -1,5 +1,7 @@
 package com.isp392.ecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 import lombok.*;
@@ -21,6 +23,7 @@ public class Size {
 
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "size", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductVariant> productSizes;
+    private List<ProductVariant> productVariants;
 }

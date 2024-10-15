@@ -43,6 +43,8 @@ public enum ErrorCode {
     CART_IS_EMPTY("CART_IS_EMPTY", "Cart is empty", HttpStatus.BAD_REQUEST),
     PRODUCT_STOCK_NOT_ENOUGH("PRODUCT_STOCK_NOT_ENOUGH", "Stock is not enough", HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND("ORDER_NOT_FOUND", "Order not found", HttpStatus.NOT_FOUND),
+    SIZE_EXISTED("SIZE_EXISTED", "Size existed", HttpStatus.BAD_REQUEST),
+    SIZE_NOT_EXISTED("SIZE_NOT_EXISTED", "Size not existed", HttpStatus.NOT_FOUND),
     ;
 
     String code;

@@ -3,6 +3,7 @@ package com.isp392.ecommerce.service;
 
 import com.isp392.ecommerce.dto.request.UserCreationRequest;
 import com.isp392.ecommerce.dto.request.UserUpdateRequest;
+import com.isp392.ecommerce.dto.response.UserResponse;
 import com.isp392.ecommerce.entity.User;
 import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.exception.AppException;
@@ -10,6 +11,7 @@ import com.isp392.ecommerce.exception.ErrorCode;
 import com.isp392.ecommerce.mapper.UserMapper;
 import com.isp392.ecommerce.repository.UserRepository;
 //framework
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -53,6 +55,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public UserResponse getMyInfo() {
+        return userMapper.toUserResponse(getCurrentUser());
+    }
 
     public User updateUser(String id, UserUpdateRequest request) {
 
@@ -69,6 +74,12 @@ public class UserService {
 //
 //        return userRepository.save(user);
         return null;
+    }
+
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     public void deleteUser(String id) {

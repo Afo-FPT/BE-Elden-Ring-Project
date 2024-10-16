@@ -38,12 +38,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                oauth2.jwt(jwtConfigurer ->
+                        jwtConfigurer
+                                .decoder(jwtDecoder()))
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
-
-
         return httpSecurity.build();
     }
 

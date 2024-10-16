@@ -1,21 +1,15 @@
 package com.isp392.ecommerce.configuartion;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
@@ -29,6 +23,9 @@ public class SecurityConfig {
             "/product/**",
     };
 
+    @Autowired
+    private CustomJwtDecoder jwtDecoder;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -40,7 +37,7 @@ public class SecurityConfig {
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
                         jwtConfigurer
-                                .decoder(jwtDecoder()))
+                                .decoder(jwtDecoder))
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 );
 
@@ -60,14 +57,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    @Bean
-    JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec = new SecretKeySpec("HDnx6daMHWmuu/rgl5B2F4FblmUXUwgwaP8N4UEQ1yAWqPb2SW/FeFVkCMwgMlqT".getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build()
-                ;
-    }
-
 }

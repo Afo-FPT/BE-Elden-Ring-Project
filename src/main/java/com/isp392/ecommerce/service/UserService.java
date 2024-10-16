@@ -11,22 +11,22 @@ import com.isp392.ecommerce.exception.ErrorCode;
 import com.isp392.ecommerce.mapper.UserMapper;
 import com.isp392.ecommerce.repository.UserRepository;
 //framework
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 //return type
-import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserMapper userMapper;
+    UserRepository userRepository;
+    UserMapper userMapper;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -48,9 +48,7 @@ public class UserService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(createRequest.getPassword()));
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.CUSTOMER.name());
-        user.setRole(roles);
+        user.setRole(Role.CUSTOMER.name());
 
         return userRepository.save(user);
     }

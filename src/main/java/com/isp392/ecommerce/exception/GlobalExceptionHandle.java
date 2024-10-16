@@ -11,8 +11,8 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception){
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED.getMessage());
+        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
+        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
@@ -30,7 +30,7 @@ public class GlobalExceptionHandle {
         String enumkey = exception.getFieldError().getDefaultMessage();
 
 
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        ErrorCode errorCode = ErrorCode.INVALID_MESSAGE_KEY;
         try {
             errorCode = ErrorCode.valueOf(enumkey);
         }catch (IllegalArgumentException e){

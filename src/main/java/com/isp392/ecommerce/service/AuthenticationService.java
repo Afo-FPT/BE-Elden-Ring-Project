@@ -32,7 +32,6 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -61,7 +60,7 @@ public class AuthenticationService {
 
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_OR_PASSWORD_WRONG));
 

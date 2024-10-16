@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.text.ParseException;
 
 @RestController
@@ -33,7 +32,7 @@ public class AuthenticationController {
 
     @CrossOrigin
     @PostMapping("/login")
-    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) throws JOSEException {
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
@@ -42,7 +41,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/introspect")
-    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws JOSEException, ParseException {
+    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws JOSEException {
         var result = authenticationService.introspectResponse(request);
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)

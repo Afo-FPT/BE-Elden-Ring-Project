@@ -28,7 +28,7 @@ public class User {
     private String fullName;
 
     @Column(name = "role", unique = true)
-    private Set<String> role;
+    private String role;
 
     @Column(name = "password")
     private String password;
@@ -41,6 +41,8 @@ public class User {
 
     @Column(name = "address")
     private String address;
+
+    private boolean googleAccount;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Blog> blogs;

@@ -7,8 +7,10 @@ import com.isp392.ecommerce.dto.response.AuthenticationResponse;
 import com.isp392.ecommerce.dto.response.IntrospectResponse;
 import com.isp392.ecommerce.entity.InvalidToken;
 import com.isp392.ecommerce.entity.User;
+import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
+import com.isp392.ecommerce.mapper.UserMapper;
 import com.isp392.ecommerce.repository.InvalidTokenRepository;
 import com.isp392.ecommerce.repository.UserRepository;
 import com.nimbusds.jose.*;
@@ -30,6 +32,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,13 +41,14 @@ import java.util.Date;
 public class AuthenticationService {
     UserRepository userRepository;
     InvalidTokenRepository invalidTokenRepository;
+    UserMapper userMapper;
 
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String  SIGNER_KEY;
 
     public IntrospectResponse  introspectResponse(IntrospectRequest request)
-            throws JOSEException, ParseException {
+            throws JOSEException {
         boolean isValid = true;
         try {
             verifyToken(request.getToken());
@@ -71,11 +75,30 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .username(user.getUsername())
+                .user(userMapper.toUserResponse(user))
                 .build();
 
+    }
+
+    public AuthenticationResponse authenticate(String email, String fullName){
+        var checkUser = userRepository.findByEmail(email);
+        User user = User.builder()
+                .fullName(fullName)
+                .email(email)
+                .role(Role.CUSTOMER.name())
+                .googleAccount(true)
+                .build();
+        if (checkUser.isPresent() && !checkUser.get().isGoogleAccount()) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }else if (checkUser.isEmpty()){
+            userRepository.save(user);
+        }
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .user(userMapper.toUserResponse(user))
+                .token(token)
+                .build();
     }
 
     public void logOut(LogOutRequest request) throws ParseException, JOSEException {
@@ -106,11 +129,11 @@ public class AuthenticationService {
         if(!verified && expiryTime.after(new Date()))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         if (invalidTokenRepository.existsById(token))
-            throw new AppException(ErrorCode.INVALID_KEY);
+            throw new AppException(ErrorCode.TOKEN_INVALID);
         return signedJWT;
     }
 
-    private String generateToken(User user) throws JOSEException {
+    private String generateToken(User user) {
         //Create a jwt header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //Create a jwt claim

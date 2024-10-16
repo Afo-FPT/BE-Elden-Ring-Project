@@ -8,7 +8,7 @@ public class EldenRingApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EldenRingApplication.class, args);
-		System.out.println("test ssh 4");
+		System.out.println("test ssh 5");
 	}
 
 }

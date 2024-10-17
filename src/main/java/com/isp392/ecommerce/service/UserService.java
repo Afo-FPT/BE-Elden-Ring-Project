@@ -1,6 +1,7 @@
 package com.isp392.ecommerce.service;
 //import class
 
+import com.isp392.ecommerce.dto.request.UpdatePasswordRequest;
 import com.isp392.ecommerce.dto.request.UserCreationRequest;
 import com.isp392.ecommerce.dto.request.UserUpdateRequest;
 import com.isp392.ecommerce.dto.response.UserResponse;
@@ -45,8 +46,8 @@ public class UserService {
         if (userRepository.existsByEmail(createRequest.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         User user = userMapper.toUser(createRequest);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassword(passwordEncoder.encode(createRequest.getPassword()));
+
+        user.setPassword(passwordEncoder().encode(createRequest.getPassword()));
 
         user.setRole(Role.CUSTOMER.name());
 
@@ -57,10 +58,26 @@ public class UserService {
         return userMapper.toUserResponse(getCurrentUser());
     }
 
-    public UserResponse updateMyInfo(UserUpdateRequest updateRequest) {
+    public UserResponse updateMyInfo(UserUpdateRequest request) {
         User user = getCurrentUser();
-        userMapper.updateUser(user, updateRequest);
+        userMapper.updateUser(user, request);
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    public void updatePassword(UpdatePasswordRequest request) {
+        //Get current user who is login
+        User user = getCurrentUser();
+        //Check if the old password match the current
+        if (passwordEncoder().matches(request.getOldPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.WRONG_PASSWORD);
+        }
+        //Check if the new password match the current
+        if (passwordEncoder().matches(request.getNewPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.MATCH_OLD_PASSWORD);
+        }
+        //Save new password
+        user.setPassword(passwordEncoder().encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 
     public User updateUser(String id, UserUpdateRequest request) {
@@ -78,6 +95,10 @@ public class UserService {
 //
 //        return userRepository.save(user);
         return null;
+    }
+
+    private PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
     }
 
     private User getCurrentUser() {

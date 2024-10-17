@@ -17,9 +17,8 @@ import lombok.*;
 @Table(name = "sizes")
 public class Size {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "size_id", nullable = false, unique = true)
-    private String sizeId;
+    private int sizeId;
 
     private String name;
 

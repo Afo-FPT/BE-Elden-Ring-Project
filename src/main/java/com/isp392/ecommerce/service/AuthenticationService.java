@@ -2,10 +2,16 @@ package com.isp392.ecommerce.service;
 
 import com.isp392.ecommerce.dto.request.AuthenticationRequest;
 import com.isp392.ecommerce.dto.request.IntrospectRequest;
+import com.isp392.ecommerce.dto.request.LogOutRequest;
 import com.isp392.ecommerce.dto.response.AuthenticationResponse;
 import com.isp392.ecommerce.dto.response.IntrospectResponse;
+import com.isp392.ecommerce.entity.InvalidToken;
+import com.isp392.ecommerce.entity.User;
+import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
+import com.isp392.ecommerce.mapper.UserMapper;
+import com.isp392.ecommerce.repository.InvalidTokenRepository;
 import com.isp392.ecommerce.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -17,14 +23,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
@@ -34,26 +39,28 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
+    InvalidTokenRepository invalidTokenRepository;
+    UserMapper userMapper;
 
     @NonFinal
-    protected  static final String  SIGNER_KEY ="HDnx6daMHWmuu/rgl5B2F4FblmUXUwgwaP8N4UEQ1yAWqPb2SW/FeFVkCMwgMlqT";
+    @Value("${jwt.signerKey}")
+    protected String  SIGNER_KEY;
 
-    public IntrospectResponse  introspectResponse(IntrospectRequest request) throws JOSEException, ParseException {
-        var token = request.getToken();
-
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        var verified = signedJWT.verify(verifier);
-
+    public IntrospectResponse  introspectResponse(IntrospectRequest request)
+            throws JOSEException {
+        boolean isValid = true;
+        try {
+            verifyToken(request.getToken());
+        } catch (ParseException e) {
+            isValid = false;
+        }
         return IntrospectResponse.builder()
-                .valid(verified && expiryTime.after(new Date()))
+                .valid(isValid)
                 .build();
 
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) throws JOSEException {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_OR_PASSWORD_WRONG));
 
@@ -63,35 +70,89 @@ public class AuthenticationService {
 
         if(!authenticated)
             throw new AppException(ErrorCode.USERNAME_OR_PASSWORD_WRONG);
-        var token = generateToken(request.getUsername());
+        var token = generateToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .username(user.getUsername())
+                .user(userMapper.toUserResponse(user))
                 .build();
 
     }
-    private String generateToken(String username) throws JOSEException {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
+    public AuthenticationResponse authenticate(String email, String fullName){
+        var checkUser = userRepository.findByEmail(email);
+        User user = User.builder()
+                .fullName(fullName)
+                .email(email)
+                .role(Role.CUSTOMER.name())
+                .googleAccount(true)
+                .build();
+        if (checkUser.isPresent() && !checkUser.get().isGoogleAccount()) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }else if (checkUser.isEmpty()){
+            userRepository.save(user);
+        }
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .user(userMapper.toUserResponse(user))
+                .token(token)
+                .build();
+    }
+
+    public void logOut(LogOutRequest request) throws ParseException, JOSEException {
+        //verify token
+        var token = verifyToken(request.getToken());
+        //get Id Token
+        String jit = token.getJWTClaimsSet().getJWTID();
+        //get expiry time
+        Date expiryTime = token.getJWTClaimsSet().getExpirationTime();
+        //store in DB
+        invalidTokenRepository.save(InvalidToken.builder()
+                .token(jit)
+                .expiryTime(expiryTime)
+                .build());
+    }
+
+    private SignedJWT verifyToken(String token)
+            throws ParseException, JOSEException {
+        //Convert token into SignedJWT
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        //Get expiry time
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        //Create a verifier with SIGNER KEY by using MACSigner
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        //Verify signature of signedJwt
+        var verified = signedJWT.verify(verifier);
+
+        if(!verified && expiryTime.after(new Date()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if (invalidTokenRepository.existsById(token))
+            throw new AppException(ErrorCode.TOKEN_INVALID);
+        return signedJWT;
+    }
+
+    private String generateToken(User user) {
+        //Create a jwt header
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+        //Create a jwt claim
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("FPTU.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(365, ChronoUnit.DAYS).toEpochMilli()
                 ))
-                .claim("customClaim", "custom")
+                .claim("scope", user.getRole())
                 .build();
-
+        //convert jwt into JSON to create a jwt payload
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-
+        //create jws consist of header and payload
         JWSObject jwsObject = new JWSObject(header, payload);
         try {
+            //sign jws with SIGNER KEY by using MACSigner
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            return jwsObject.serialize();
+            return jwsObject.serialize();//serialize to jwt
         }catch (JOSEException e){
             log.error("cannot create token, e");
             throw new RuntimeException(e);

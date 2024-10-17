@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,10 +13,11 @@ import java.math.BigDecimal;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductUpdateRequest {
-    String productName;
-    String productSize;
-    String productDescription;
-    String status;
-    int inStock;
-    BigDecimal price;
+    String name;
+    String description;
+    Boolean status;
+    String image;
+    Double price;
+    String cateId; // ID của danh mục sản phẩm
+    List<ProductVariantRequest> productVariants;
 }

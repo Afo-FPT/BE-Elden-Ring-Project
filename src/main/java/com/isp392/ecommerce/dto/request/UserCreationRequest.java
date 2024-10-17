@@ -1,12 +1,8 @@
 package com.isp392.ecommerce.dto.request;
 
-import com.isp392.ecommerce.entity.Cart;
-import com.isp392.ecommerce.exception.ErrorCode;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -23,7 +19,7 @@ public class UserCreationRequest {
     @Email(message = "WRONG_EMAIL_FORMAT")
     private String email;
     private String fullName;
-    private Set<String> role;
+    private String role;
     private String phone;
 
 

@@ -1,14 +1,14 @@
 package com.isp392.ecommerce.dto.request;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class IntrospectRequest {
-    String token;
+public class CreateCategoryRequest {
+    String cateName;
 }

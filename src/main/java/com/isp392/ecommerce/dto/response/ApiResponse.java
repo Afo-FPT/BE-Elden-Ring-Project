@@ -2,16 +2,18 @@ package com.isp392.ecommerce.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
+@Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ApiResponse<T> {
-    private int code = 1000;
-    private String message;
-    private T result;
-
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)//not show field which is null
+public class ApiResponse <T>{
+    @Builder.Default
+    String code = "200";
+    String message;
+    T result;
 }

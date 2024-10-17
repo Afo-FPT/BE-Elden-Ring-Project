@@ -1,7 +1,8 @@
 package com.isp392.ecommerce.entity;
 
-import jakarta.persistence.*;
+
 import lombok.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter
@@ -11,12 +12,13 @@ import lombok.*;
 @EqualsAndHashCode
 
 @Entity
-@Table(name = "cart_product")
-public class Cart_Product {
+@Table(name = "order_details")
+public class OrderDetail {
+
     @Id
     @ManyToOne
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @Id
     @ManyToOne

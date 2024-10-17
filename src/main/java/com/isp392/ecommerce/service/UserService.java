@@ -1,8 +1,10 @@
 package com.isp392.ecommerce.service;
 //import class
 
+import com.isp392.ecommerce.dto.request.UpdatePasswordRequest;
 import com.isp392.ecommerce.dto.request.UserCreationRequest;
 import com.isp392.ecommerce.dto.request.UserUpdateRequest;
+import com.isp392.ecommerce.dto.response.UserResponse;
 import com.isp392.ecommerce.entity.User;
 import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.exception.AppException;
@@ -10,21 +12,22 @@ import com.isp392.ecommerce.exception.ErrorCode;
 import com.isp392.ecommerce.mapper.UserMapper;
 import com.isp392.ecommerce.repository.UserRepository;
 //framework
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 //return type
-import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserMapper userMapper;
+    UserRepository userRepository;
+    UserMapper userMapper;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -43,31 +46,65 @@ public class UserService {
         if (userRepository.existsByEmail(createRequest.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         User user = userMapper.toUser(createRequest);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassword(passwordEncoder.encode(createRequest.getPassword()));
 
-//        HashSet<String> roles = new HashSet<>();
-//        roles.add(Role.CUSTOMER.name());
-//        user.setRole(roles);
+        user.setPassword(passwordEncoder().encode(createRequest.getPassword()));
+
+        user.setRole(Role.CUSTOMER.name());
 
         return userRepository.save(user);
     }
 
+    public UserResponse getMyInfo() {
+        return userMapper.toUserResponse(getCurrentUser());
+    }
+
+    public UserResponse updateMyInfo(UserUpdateRequest request) {
+        User user = getCurrentUser();
+        userMapper.updateUser(user, request);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    public void updatePassword(UpdatePasswordRequest request) {
+        //Get current user who is login
+        User user = getCurrentUser();
+        //Check if the old password match the current
+        if (passwordEncoder().matches(request.getOldPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.WRONG_PASSWORD);
+        }
+        //Check if the new password match the current
+        if (passwordEncoder().matches(request.getNewPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.MATCH_OLD_PASSWORD);
+        }
+        //Save new password
+        user.setPassword(passwordEncoder().encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
 
     public User updateUser(String id, UserUpdateRequest request) {
 
-        User user = getUserById(id);
-        if(!(request.getFullName().isEmpty() || request.getFullName().isBlank())){
-            user.setFullName(request.getFullName());
-        }else throw new AppException(ErrorCode.FULLNAMEEMPTY);
-        if(!(request.getPhone().isEmpty() || request.getPhone().isBlank())){
-            user.setPhone(request.getPhone());
-        }else throw new AppException(ErrorCode.PHONEEMPTY);
-        if(!(request.getAddress().isEmpty() || request.getAddress().isBlank())){
-            user.setAddress(request.getAddress());
-        }else throw new AppException(ErrorCode.ADDRESSEMPTY);
+//        User user = getUserById(id);
+//        if(!(request.getFullName().isEmpty() || request.getFullName().isBlank())){
+//            user.setFullName(request.getFullName());
+//        }else throw new AppException(ErrorCode.FULLNAMEEMPTY);
+//        if(!(request.getPhone().isEmpty() || request.getPhone().isBlank())){
+//            user.setPhone(request.getPhone());
+//        }else throw new AppException(ErrorCode.PHONEEMPTY);
+//        if(!(request.getAddress().isEmpty() || request.getAddress().isBlank())){
+//            user.setAddress(request.getAddress());
+//        }else throw new AppException(ErrorCode.ADDRESSEMPTY);
+//
+//        return userRepository.save(user);
+        return null;
+    }
 
-        return userRepository.save(user);
+    private PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
+    }
+
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     public void deleteUser(String id) {

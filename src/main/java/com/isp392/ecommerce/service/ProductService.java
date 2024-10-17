@@ -109,7 +109,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // Cập nhật thông tin sản phẩm
+        // Cập nhật thông tin sản phẩm nếu có
         if (request.getName() != null) {
             product.setName(request.getName());
         }
@@ -126,49 +126,66 @@ public class ProductService {
             product.setStatus(request.getStatus());
         }
 
-//        product.setStock(product.getStock());
-
-        // Cập nhật danh mục
+        // Cập nhật danh mục nếu có
         if (request.getCateId() != null) {
             Category category = categoryRepository.findById(request.getCateId())
                     .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
             product.setCategory(category);
         }
 
-        // Cập nhật danh sách ProductVariants
-        if (request.getProductVariants() != null) {
-            int totalStock = 0;
-            // Sử dụng Map để dễ dàng cập nhật
-            Map<String, ProductVariant> existingVariantsMap = product.getProductVariants().stream()
-                    .collect(Collectors.toMap(v -> v.getSize().getName(), v -> v));
+        // Tổng số lượng tồn kho
+        int totalStock = 0;
 
+        // Lấy danh sách các ProductVariants hiện có của sản phẩm
+        List<ProductVariant> currentVariants = product.getProductVariants();
+
+        // Sử dụng Map để quản lý các biến thể hiện có theo tên size
+        Map<String, ProductVariant> existingVariantsMap = currentVariants.stream()
+                .collect(Collectors.toMap(v -> v.getSize().getName(), v -> v));
+
+        // Tạo một danh sách lưu các size đã được cập nhật từ request
+        Set<String> updatedSizes = new HashSet<>();
+
+        // Nếu request có danh sách biến thể
+        if (request.getProductVariants() != null) {
             for (ProductVariantRequest variantRequest : request.getProductVariants()) {
                 Size size = sizeRepository.findByName(variantRequest.getSizeName())
                         .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
 
-                // Tìm biến thể hiện có
+                // Thêm size vào danh sách các size đã được cập nhật
+                updatedSizes.add(variantRequest.getSizeName());
+
+                // Tìm biến thể hiện có theo tên size
                 ProductVariant existingVariant = existingVariantsMap.get(variantRequest.getSizeName());
 
                 if (existingVariant != null) {
-                    // Nếu biến thể đã tồn tại, cập nhật quantity
+                    // Nếu biến thể đã tồn tại, cập nhật lại quantity với giá trị mới
+                    totalStock += variantRequest.getQuantity(); // Thay số lượng cũ bằng số lượng mới
                     existingVariant.setQuantity(variantRequest.getQuantity());
                 } else {
-                    // Nếu không tồn tại, tạo mới biến thể
+                    // Nếu không tồn tại, tạo mới biến thể và đặt quantity
                     ProductVariant newVariant = ProductVariant.builder()
                             .size(size)
                             .quantity(variantRequest.getQuantity())
                             .product(product)
                             .build();
                     product.getProductVariants().add(newVariant);
+                    totalStock += variantRequest.getQuantity();
                 }
-                totalStock += variantRequest.getQuantity();
             }
-
-            // Cập nhật số lượng tồn kho cho sản phẩm chỉ khi có biến thể mới
-            product.setStock(totalStock);
         }
 
-        // Lưu lại sản phẩm
+        // Cộng dồn stock từ các biến thể hiện có mà không nằm trong danh sách đã cập nhật
+        for (ProductVariant variant : currentVariants) {
+            if (!updatedSizes.contains(variant.getSize().getName())) {
+                totalStock += variant.getQuantity(); // Cộng thêm số lượng của biến thể không được cập nhật
+            }
+        }
+
+        // Cập nhật stock cho sản phẩm
+        product.setStock(totalStock);
+
+        // Lưu lại sản phẩm và các biến thể
         productRepository.save(product);
         productVariantRepository.saveAll(product.getProductVariants()); // Lưu tất cả biến thể
 
@@ -208,86 +225,4 @@ public class ProductService {
 }
 
 
-//    public ProductResponse updateProduct(String id, ProductUpdateRequest request) {
-//        // Tìm sản phẩm theo ID
-//        Product product = productRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-//
-//        if (request.getName() != null) {
-//            product.setName(request.getName());
-//        }
-//        if (request.getImage() != null) {
-//            product.setImage(request.getImage());
-//        }
-//        if (request.getPrice() != null) {
-//            product.setPrice(request.getPrice());
-//        }
-//        if (request.getStock() != null) {
-//            product.setStock(request.getStock());
-//        }
-//        if (request.getDescription() != null) {
-//            product.setDescription(request.getDescription());
-//        }
-//        if (request.getStatus() != null) {
-//            product.setStatus(request.getStatus());
-//        }
-//
-//        // Cập nhật danh mục
-//        if (request.getCateId() != null) {
-//            Category category = categoryRepository.findById(request.getCateId())
-//                    .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
-//            product.setCategory(category);
-//        }
-//
-//
-//        // Cập nhật danh sách ProductVariants
-//        List<ProductVariant> productVariants = new ArrayList<>();
-//        int stock = 0;
-//
-//        if (request.getProductVariants() != null) {
-//            for (ProductVariantRequest variantRequest : request.getProductVariants()) {
-//                // Tìm size theo tên
-//                Size size = sizeRepository.findByName(variantRequest.getSizeName())
-//                        .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
-//
-//                // Tìm ProductVariant hiện có, hoặc tạo mới nếu không tồn tại
-//                Optional<ProductVariant> existingVariant = product.getProductVariants().stream()
-//                        .filter(v -> v.getSize().getName().equals(variantRequest.getSizeName()))
-//                        .findFirst();
-//
-//                if (existingVariant.isPresent()) {
-//                    // Nếu ProductVariant tồn tại, cập nhật quantity
-//                    ProductVariant variant = existingVariant.get();
-//                    variant.setQuantity(variantRequest.getQuantity());
-//                    stock += variantRequest.getQuantity();
-//                    productVariants.add(variant);
-//                } else {
-//                    // Nếu không tồn tại, tạo mới ProductVariant
-//                    ProductVariant newVariant = ProductVariant.builder()
-//                            .size(size)
-//                            .quantity(variantRequest.getQuantity())
-//                            .product(product)
-//                            .build();
-//                    stock += variantRequest.getQuantity();
-//                    productVariants.add(newVariant);
-//                }
-//            }
-//        }
-//
-//        // Cập nhật số lượng stock của sản phẩm
-//        product.setStock(stock);
-//
-//        // Xóa các ProductVariant không còn nằm trong danh sách mới
-//        List<ProductVariant> variantsToRemove = product.getProductVariants().stream()
-//                .filter(v -> productVariants.stream()
-//                        .noneMatch(newVariant -> newVariant.getSize().equals(v.getSize())))
-//                .toList();
-//        product.getProductVariants().removeAll(variantsToRemove);
-//
-//        // Lưu lại sản phẩm và các biến thể
-//        productRepository.save(product);
-//        productVariantRepository.saveAll(productVariants);
-//
-//        return mapToDTO(product);
-//    }
 

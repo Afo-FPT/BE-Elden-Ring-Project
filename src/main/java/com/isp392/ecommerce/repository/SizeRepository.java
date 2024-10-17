@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SizeRepository extends JpaRepository<Size, String> {
+public interface SizeRepository extends JpaRepository<Size, Integer> {
     boolean existsByName(String name);
     Optional<Size> findByName(String name);
 }

@@ -21,6 +21,8 @@ public class SecurityConfig {
             "/category/**",
             "/size/**",
             "/product/**",
+            "/blog/**",
+
     };
 
     @Autowired

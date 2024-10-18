@@ -22,6 +22,7 @@ public class SecurityConfig {
             "/size/**",
             "/product/**",
             "/blog/**",
+            "/cart/**",
 
     };
 

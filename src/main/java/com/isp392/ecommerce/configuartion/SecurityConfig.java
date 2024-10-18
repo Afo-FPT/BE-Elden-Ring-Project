@@ -16,12 +16,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINT = {"/users/**",
-            "/auth/login",
-            "/auth/introspect",
+            "/auth/**",
             "/category/**",
             "/size/**",
             "/product/**",
             "/blog/**",
+            "/cart/**",
 
     };
 

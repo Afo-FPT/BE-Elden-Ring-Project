@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatusCode;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
-    USERNAME_OR_PASSWORD_WRONG("USERNAME_OR_PASSWORD_WRONG", "username or passrod wrong", HttpStatus.BAD_REQUEST),
-    PHONEEXISTED("PHONEEXISTED", "phone existed", HttpStatus.BAD_REQUEST),
+    USERNAME_OR_PASSWORD_WRONG("USERNAME_OR_PASSWORD_WRONG", "username or password wrong", HttpStatus.BAD_REQUEST),
+    PHONE_EXISTED("PHONE_EXISTED", "phone existed", HttpStatus.BAD_REQUEST),
     USER_EXISTED("USER_EXISTED", "user existed", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED("EMAIL_EXISTED","Email existed", HttpStatus.BAD_REQUEST),
     UNCATEGORIZED_EXCEPTION("UNCATEGORIZED_EXCEPTION","Uncategorized exception", HttpStatus.INTERNAL_SERVER_ERROR),
@@ -37,7 +37,7 @@ public enum ErrorCode {
     MATCH_OLD_PASSWORD("MATCHED_OLD_PASSWORD","Password matched the old", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD("WRONG_PASSWORD", "Current password is not matched", HttpStatus.BAD_REQUEST),
     CART_NOT_FOUND("CART_NOT_FOUND", "Cart not found", HttpStatus.NOT_FOUND),
-    CARTITEM_NOT_FOUND("CARTITEM_NOT_FOUND", "Cart item not found", HttpStatus.NOT_FOUND),
+    CART_ITEM_NOT_FOUND("CART_ITEM_NOT_FOUND", "Cart item not found", HttpStatus.NOT_FOUND),
     QUANTITY_GREATER_THAN_0("QUANTITY_GREATER_THAN_0", "Quantity must equal or greater than 0", HttpStatus.BAD_REQUEST),
     CART_ALREADY_EXISTED("CART_ALREADY_EXISTED", "Cart is already existed", HttpStatus.BAD_REQUEST),
     CART_IS_EMPTY("CART_IS_EMPTY", "Cart is empty", HttpStatus.BAD_REQUEST),

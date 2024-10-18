@@ -15,8 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-
 @Entity
 @Table(name = "carts")
 public class Cart {

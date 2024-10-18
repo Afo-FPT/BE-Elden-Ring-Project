@@ -9,8 +9,6 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-
 @Entity
 @Table(name = "order_details")
 public class OrderDetail {

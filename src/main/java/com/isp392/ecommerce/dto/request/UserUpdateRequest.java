@@ -7,8 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-
 public class UserUpdateRequest {
     private String fullName;
     private String phone;

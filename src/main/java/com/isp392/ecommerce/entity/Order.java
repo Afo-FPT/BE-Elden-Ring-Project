@@ -11,8 +11,6 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-
 @Entity
 @Table(name = "orders")
 public class Order {

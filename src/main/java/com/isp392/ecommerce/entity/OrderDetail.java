@@ -14,16 +14,26 @@ import jakarta.persistence.*;
 public class OrderDetail {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String orderDetailId;
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
+    private String productName;
+    private float unitPrice;
+    private String description;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
+
+
+    @Column(name = "total")
+    private float total;
 }
 

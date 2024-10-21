@@ -22,7 +22,6 @@ import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -166,7 +165,7 @@ public class UserService {
         return new BCryptPasswordEncoder(10);
     }
 
-    private User getCurrentUser() {
+    public User getCurrentUser() {
 //        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 //        return userRepository.findByUsername(username)
 //                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -12,6 +13,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "cart_items")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CartItem {
 
     @Id
@@ -35,5 +37,6 @@ public class CartItem {
 
     @Column(name = "quantity", nullable = false)
     int quantity;
+
 }
 

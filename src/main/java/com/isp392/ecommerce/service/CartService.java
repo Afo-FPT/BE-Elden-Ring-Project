@@ -103,7 +103,7 @@ public class CartService {
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
 
         CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new AppException(ErrorCode.CARTITEM_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
 
         // Cập nhật số lượng của CartItem
         cartItem.setQuantity(request.getQuantity());
@@ -121,7 +121,7 @@ public class CartService {
         if (cartItemRepository.existsById(cartItemId)) {
             cartItemRepository.deleteCartItemById(cartItemId);
         } else
-            throw new AppException(ErrorCode.CARTITEM_NOT_FOUND);
+            throw new AppException(ErrorCode.CART_ITEM_NOT_FOUND);
     }
 
     public CartResponse getCart(String cartId) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.isp392.ecommerce.dto.request.AuthenticationRequest;
 import com.isp392.ecommerce.dto.request.IntrospectRequest;
 import com.isp392.ecommerce.dto.request.LogOutRequest;
+import com.isp392.ecommerce.dto.request.VerifyOtpRequest;
 import com.isp392.ecommerce.dto.response.ApiResponse;
 import com.isp392.ecommerce.dto.response.AuthenticationResponse;
 import com.isp392.ecommerce.dto.response.IntrospectResponse;
@@ -36,7 +37,6 @@ public class AuthenticationController {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
-
                 .build();
     }
 
@@ -54,6 +54,14 @@ public class AuthenticationController {
         authenticationService.logOut(request);
         return ApiResponse.<Void>builder()
                 .message("Logged out successfully")
+                .build();
+    }
+
+    @PostMapping("/verify-forgot-password")
+    ApiResponse<String> verifyResetPassword(@RequestBody VerifyOtpRequest request){
+        return ApiResponse.<String>builder()
+                .message("Verify successfully!")
+                .result(authenticationService.verifyOtp(request).getEmail())
                 .build();
     }
 

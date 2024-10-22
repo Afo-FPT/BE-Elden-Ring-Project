@@ -12,8 +12,6 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-
 @Entity
 @Table(name = "accounts")
 public class User {
@@ -28,7 +26,7 @@ public class User {
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "role", unique = true)
+    @Column(name = "role")
     private String role;
 
     @Column(name = "password")

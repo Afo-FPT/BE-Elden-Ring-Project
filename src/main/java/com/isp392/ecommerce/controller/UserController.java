@@ -1,6 +1,7 @@
 package com.isp392.ecommerce.controller;
 //import class
 
+import com.isp392.ecommerce.dto.request.ResetPasswordRequest;
 import com.isp392.ecommerce.dto.request.UpdatePasswordRequest;
 import com.isp392.ecommerce.dto.request.UserCreationRequest;
 import com.isp392.ecommerce.dto.request.UserUpdateRequest;
@@ -10,6 +11,9 @@ import com.isp392.ecommerce.entity.User;
 import com.isp392.ecommerce.service.UserService;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 /*
@@ -23,14 +27,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-
-    @Autowired
-    private UserService userService;
+     UserService userService;
 
     @CrossOrigin  //cross port
 
-    @PostMapping
+    @PostMapping("/sign-up")
     ApiResponse<User> create(@RequestBody @Valid UserCreationRequest createRequest) {
         return ApiResponse.<User>builder()
                 .result(userService.create(createRequest))
@@ -59,17 +63,31 @@ public class UserController {
                 .build();
     }
 
+    @PostMapping("/forgot-password")
+    ApiResponse<String> forgotPassword(@RequestBody String email){
+        return ApiResponse.<String>builder()
+                .message("Request forgot password successfully!")
+                .result(userService.forgotPassword(email))
+                .build();
+    }
+
+//    @GetMapping("/{id}")
+//    public User getUser(@PathVariable("id") String userId) {
+//        return userService.getUserById(userId);
+//    }
+
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable("id") String userId) {
-        return userService.getUserById(userId);
+    @PostMapping("/reset-password")
+    ApiResponse<Void> resetPassword(@RequestBody ResetPasswordRequest request){
+        userService.resetPassword(request);
+        return ApiResponse.<Void>builder()
+                .message("Reset password successfully!")
+                .build();
     }
-
-    
 
     @PutMapping("/{id}")
     public User updateUser(@PathVariable("id") String userId, @RequestBody UserUpdateRequest request) {

@@ -1,41 +1,55 @@
 package com.isp392.ecommerce.entity;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import lombok.*;
 import jakarta.persistence.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
-
 @Entity
 @Table(name = "orders")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id", nullable = false, unique = true)
-    private String orderId;
+     String orderId;
 
-    @Column(name = "status", nullable = false, unique = true)
-    private String status;
+    @Column(name = "PaymentId", nullable = false, unique = true)
+    String paymentId;
+
+    @Column(name = "status")
+     String status;
 
     @Column(name = "created_date", nullable = false)
-    private LocalDate createdDate;
+    Date createdDate;
 
     @Column(name = "total_price", nullable = false)
-    private BigDecimal totalPrice;
+     float totalPrice;
+
+    @Column(name = "phone", length = 10)
+    String phone;
+
+    @Column(name = "address")
+    String address;
+
+    @Column(name = "email")
+    String email;
+
+    @Column(name = "fullname")
+    String fullname;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "consumer_id", nullable = false)
-    private User user;
+     User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderDetail> orderProducts;
+     List<OrderDetail> orderProducts;
 
 }

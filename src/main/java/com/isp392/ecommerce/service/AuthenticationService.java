@@ -3,15 +3,18 @@ package com.isp392.ecommerce.service;
 import com.isp392.ecommerce.dto.request.AuthenticationRequest;
 import com.isp392.ecommerce.dto.request.IntrospectRequest;
 import com.isp392.ecommerce.dto.request.LogOutRequest;
+import com.isp392.ecommerce.dto.request.VerifyOtpRequest;
 import com.isp392.ecommerce.dto.response.AuthenticationResponse;
 import com.isp392.ecommerce.dto.response.IntrospectResponse;
 import com.isp392.ecommerce.entity.InvalidToken;
+import com.isp392.ecommerce.entity.OtpToken;
 import com.isp392.ecommerce.entity.User;
 import com.isp392.ecommerce.enums.Role;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
 import com.isp392.ecommerce.mapper.UserMapper;
 import com.isp392.ecommerce.repository.InvalidTokenRepository;
+import com.isp392.ecommerce.repository.OtpTokenRepository;
 import com.isp392.ecommerce.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -41,6 +44,7 @@ public class AuthenticationService {
     UserRepository userRepository;
     InvalidTokenRepository invalidTokenRepository;
     UserMapper userMapper;
+    OtpTokenRepository otpTokenRepository;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -112,6 +116,19 @@ public class AuthenticationService {
                 .token(jit)
                 .expiryTime(expiryTime)
                 .build());
+    }
+
+    public OtpToken verifyOtp(VerifyOtpRequest request){
+        //get verificationToken
+        OtpToken otpToken = otpTokenRepository.findById(request.getOtp())
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_OTP_INVALID));
+        //check if this otp is generated for sign-up email
+        if (!otpToken.getEmail().equals(request.getEmail()))
+            throw new AppException(ErrorCode.EMAIL_OTP_INVALID);
+        //check if otp is expired
+        if (!otpToken.getExpiryTime().after(new Date()))
+            throw new AppException(ErrorCode.EMAIL_OTP_EXPIRED);
+        return otpToken;
     }
 
     private SignedJWT verifyToken(String token)

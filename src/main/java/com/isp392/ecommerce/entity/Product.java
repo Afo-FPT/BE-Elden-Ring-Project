@@ -2,7 +2,6 @@ package com.isp392.ecommerce.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +25,7 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String image;
     private int stock;
-    private double price;
+    private float price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -37,8 +36,7 @@ public class Product {
     @JsonIgnore // Ngăn chặn tuần hoàn khi ánh xạ ngược
     private List<ProductVariant> productVariants;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Feedback> feedbacks;
+
 }
 
 

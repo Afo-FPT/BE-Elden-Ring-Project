@@ -17,7 +17,7 @@ public class ProductUpdateRequest {
     String description;
     Boolean status;
     String image;
-    Double price;
+    Float price;
     String cateId; // ID của danh mục sản phẩm
     List<ProductVariantRequest> productVariants;
 }

@@ -21,7 +21,7 @@ public class ProductCreateRequest {
     String description;
     Boolean status;
     String image;
-    Double price;
+    Float price;
     String cateId; // ID của danh mục sản phẩm
     List<ProductVariantRequest> productVariants; // Danh sách các kích thước và số lượng
 }

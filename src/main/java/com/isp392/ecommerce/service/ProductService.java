@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductService {
+public class  ProductService {
 
     @Autowired
     private ProductRepository productRepository;

@@ -65,7 +65,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_OR_PASSWORD_WRONG));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -154,7 +154,7 @@ public class AuthenticationService {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //Create a jwt claim
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getEmail())
                 .issuer("FPTU.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(

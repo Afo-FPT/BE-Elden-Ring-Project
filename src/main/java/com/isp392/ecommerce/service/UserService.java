@@ -52,7 +52,7 @@ public class UserService {
 
     public User getUserById(String id) {// findById() return Optional DType
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     public User create(UserCreationRequest createRequest) {
@@ -62,8 +62,6 @@ public class UserService {
         user.setRole(Role.CUSTOMER.name());
         if(userRepository.existsByPhone(createRequest.getPhone()))
             throw new AppException(ErrorCode.PHONE_EXISTED);
-        if (userRepository.existsByUsername(createRequest.getUsername()))
-            throw new AppException(ErrorCode.USER_EXISTED);
         if (userRepository.existsByEmail(createRequest.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         return userRepository.save(user);

@@ -71,10 +71,6 @@ public class UserController {
                 .build();
     }
 
-//    @GetMapping("/{id}")
-//    public User getUser(@PathVariable("id") String userId) {
-//        return userService.getUserById(userId);
-//    }
 
     @GetMapping
     public List<User> getAllUsers() {

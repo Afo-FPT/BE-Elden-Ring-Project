@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class EldenRingApplication implements CommandLineRunner {
@@ -50,12 +52,12 @@ public class EldenRingApplication implements CommandLineRunner {
 					.build());
 		}
 		if (userRepository.findByEmail("admin1@gmail.com").isEmpty()){
-
+			PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 			User user = User.builder()
 					.email("admin1@gmail.com")
 					.fullName("Admin01")
 					.role(Role.ADMIN.toString())
-					.password("123456789")
+					.password(passwordEncoder.encode("123456789"))
 					.build();
 
 			userRepository.save(user);

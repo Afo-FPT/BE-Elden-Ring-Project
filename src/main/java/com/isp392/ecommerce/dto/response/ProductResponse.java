@@ -20,7 +20,7 @@ public class ProductResponse {
     Boolean status;
     String image;
     Integer stock;
-    Double price;
+    Float price;
     String cateName;
     List<ProductVariantResponse> productVariants; // Danh sách các kích thước và số lượng
 }

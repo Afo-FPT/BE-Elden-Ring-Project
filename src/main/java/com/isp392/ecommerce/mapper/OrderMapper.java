@@ -27,6 +27,6 @@ public interface OrderMapper {
     @Mapping(source = "product.name", target = "productName")
     @Mapping(source = "product.price", target = "unitPrice")
     @Mapping(source = "product.description", target = "description")
-    @Mapping(expression = "java(cartItem.getProduct().getUnitPrice() * cartItem.getQuantity())" , target = "total")
+    @Mapping(expression = "java(cartItem.getProduct().getPrice() * cartItem.getQuantity())" , target = "total")
     OrderDetail toOrderDetail(CartItem cartItem);
 }

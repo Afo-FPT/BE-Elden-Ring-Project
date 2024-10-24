@@ -58,10 +58,7 @@ public class UserService {
     public User create(UserCreationRequest createRequest) {
         User user = userMapper.toUser(createRequest);
         user.setPassword(passwordEncoder().encode(createRequest.getPassword()));
-
         user.setRole(Role.CUSTOMER.name());
-        if(userRepository.existsByPhone(createRequest.getPhone()))
-            throw new AppException(ErrorCode.PHONE_EXISTED);
         if (userRepository.existsByEmail(createRequest.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         return userRepository.save(user);

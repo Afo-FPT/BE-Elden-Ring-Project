@@ -35,6 +35,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -86,6 +87,7 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(String email, String fullName){
         var checkUser = userRepository.findByEmail(email);
         User user = User.builder()
+                .userId(checkUser.map(User::getUserId).orElse(null))
                 .fullName(fullName)
                 .email(email)
                 .role(Role.CUSTOMER.name())
@@ -160,6 +162,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(365, ChronoUnit.DAYS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", user.getRole())
                 .build();
         //convert jwt into JSON to create a jwt payload

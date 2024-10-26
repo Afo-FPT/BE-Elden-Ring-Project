@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("/category")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryController {
 
     CategoryService categoryService;
@@ -46,6 +45,14 @@ public class CategoryController {
                 .build();
     }
 
+    @GetMapping("/shop/{cateId}")
+    ApiResponse<CategoryResponse> getActiveCategory(@PathVariable int cateId) {
+        return ApiResponse.<CategoryResponse>builder()
+                .message("Get category successfully")
+                .result(categoryService.getActiveCategory(cateId))
+                .build();
+    }
+
     @DeleteMapping("/{cateId}")
     ApiResponse<Void> deleteCategory(@PathVariable int cateId) {
         categoryService.deleteCategory(cateId);
@@ -53,4 +60,5 @@ public class CategoryController {
                 .message("Delete category successfully")
                 .build();
     }
+
 }

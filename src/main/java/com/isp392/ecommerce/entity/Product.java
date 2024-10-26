@@ -36,8 +36,6 @@ public class Product {
     @JsonIgnore // Ngăn chặn tuần hoàn khi ánh xạ ngược
     private List<ProductVariant> productVariants;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Feedback> feedbacks;
 }
 
 

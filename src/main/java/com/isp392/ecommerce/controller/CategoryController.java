@@ -1,7 +1,9 @@
 package com.isp392.ecommerce.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.isp392.ecommerce.dto.request.CreateCategoryRequest;
 import com.isp392.ecommerce.dto.response.ApiResponse;
+import com.isp392.ecommerce.dto.response.CategoryResponse;
 import com.isp392.ecommerce.entity.Category;
 import com.isp392.ecommerce.service.CategoryService;
 import lombok.AccessLevel;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequestMapping("/category")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryController {
 
     CategoryService categoryService;
@@ -36,8 +39,8 @@ public class CategoryController {
     }
 
     @GetMapping("/{cateId}")
-    ApiResponse<Category> getCategory(@PathVariable int cateId) {
-        return ApiResponse.<Category>builder()
+    ApiResponse<CategoryResponse> getCategory(@PathVariable int cateId) {
+        return ApiResponse.<CategoryResponse>builder()
                 .message("Get category successfully")
                 .result(categoryService.getCategory(cateId))
                 .build();

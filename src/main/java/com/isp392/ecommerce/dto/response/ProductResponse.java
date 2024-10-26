@@ -1,5 +1,6 @@
 package com.isp392.ecommerce.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.isp392.ecommerce.dto.request.ProductVariantRequest;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductResponse {
     String productId;
     String name;

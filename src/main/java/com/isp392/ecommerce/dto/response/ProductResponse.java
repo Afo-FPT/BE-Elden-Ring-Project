@@ -21,6 +21,7 @@ public class ProductResponse {
     String image;
     Integer stock;
     Float price;
+    Integer cateId;
     String cateName;
     List<ProductVariantResponse> productVariants; // Danh sách các kích thước và số lượng
 }

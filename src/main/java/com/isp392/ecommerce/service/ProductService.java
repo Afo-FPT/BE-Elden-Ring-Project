@@ -224,6 +224,7 @@ public class ProductService {
                 .stock(product.getStock())
                 .description(product.getDescription())
                 .status(product.isStatus())
+                .cateId(product.getCategory().getCateId())
                 .cateName(product.getCategory().getCateName())
                 .productVariants(variantDTOs)
                 .build();

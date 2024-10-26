@@ -104,6 +104,13 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductResponse> getAllActiveProducts() {
+        List<Product> products = productRepository.findByStatusTrue().stream().toList();
+        return products.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     public ProductResponse updateProduct(String id, ProductUpdateRequest request) {
         // Tìm sản phẩm theo ID
         Product product = productRepository.findById(id)

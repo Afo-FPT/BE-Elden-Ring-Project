@@ -22,6 +22,7 @@ import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -170,5 +171,21 @@ public class UserService {
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse createAdminAccount(UserCreationRequest request){
+        //Map request to User
+        User user = userMapper.toUser(request);
+        //Encode password
+        user.setPassword(passwordEncoder().encode(request.getPassword()));
+        //Set role Admin for account
+        user.setRole(Role.ADMIN.name());
+        try {
+            user = userRepository.save(user);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        return userMapper.toUserResponse(user);
     }
 }

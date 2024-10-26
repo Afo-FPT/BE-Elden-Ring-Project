@@ -15,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 /*
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -94,6 +96,16 @@ public class UserController {
     public String deleteUser(@PathVariable("id") String userId) {
         userService.deleteUser(userId);
         return "User has been deleted";
+    }
+
+    @PostMapping("/admin/create")
+    ResponseEntity<ApiResponse<UserResponse>> createAdmin(@Valid @RequestBody UserCreationRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.<UserResponse>builder()
+                        .code("201")
+                        .message("Create admin successfully!")
+                        .result(userService.createAdminAccount(request))
+                        .build());
     }
 
 }

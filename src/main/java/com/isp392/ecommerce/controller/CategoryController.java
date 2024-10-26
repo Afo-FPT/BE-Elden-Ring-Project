@@ -36,7 +36,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{cateId}")
-    ApiResponse<Category> getCategory(@PathVariable String cateId) {
+    ApiResponse<Category> getCategory(@PathVariable int cateId) {
         return ApiResponse.<Category>builder()
                 .message("Get category successfully")
                 .result(categoryService.getCategory(cateId))
@@ -44,7 +44,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{cateId}")
-    ApiResponse<Void> deleteCategory(@PathVariable String cateId) {
+    ApiResponse<Void> deleteCategory(@PathVariable int cateId) {
         categoryService.deleteCategory(cateId);
         return ApiResponse.<Void>builder()
                 .message("Delete category successfully")

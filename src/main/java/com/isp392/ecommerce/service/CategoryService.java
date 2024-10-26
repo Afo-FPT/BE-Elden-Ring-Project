@@ -37,14 +37,14 @@ public class CategoryService {
         return categoryRepository.findAll().stream().toList();
     }
 
-    public Category getCategory(String id) {
+    public Category getCategory(int id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_EXISTED));
 
         return category;
     }
 
-    public void deleteCategory(String id) {
+    public void deleteCategory(int id) {
         categoryRepository.deleteById(id);
     }
 }

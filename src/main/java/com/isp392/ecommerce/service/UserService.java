@@ -22,6 +22,7 @@ import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,18 +53,13 @@ public class UserService {
 
     public User getUserById(String id) {// findById() return Optional DType
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     public User create(UserCreationRequest createRequest) {
         User user = userMapper.toUser(createRequest);
         user.setPassword(passwordEncoder().encode(createRequest.getPassword()));
-
         user.setRole(Role.CUSTOMER.name());
-        if(userRepository.existsByPhone(createRequest.getPhone()))
-            throw new AppException(ErrorCode.PHONE_EXISTED);
-        if (userRepository.existsByUsername(createRequest.getUsername()))
-            throw new AppException(ErrorCode.USER_EXISTED);
         if (userRepository.existsByEmail(createRequest.getEmail()))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         return userRepository.save(user);
@@ -165,7 +161,7 @@ public class UserService {
         return new BCryptPasswordEncoder(10);
     }
 
-    private User getCurrentUser() {
+    public User getCurrentUser() {
 //        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 //        return userRepository.findByUsername(username)
 //                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -173,7 +169,24 @@ public class UserService {
                 .build();
     }
 
-    public void deleteUser(String id) {
-        userRepository.deleteById(id);
+//    public void deleteUser(String id) {
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+//    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse createAdminAccount(UserCreationRequest request){
+        //Map request to User
+        User user = userMapper.toUser(request);
+        //Encode password
+        user.setPassword(passwordEncoder().encode(request.getPassword()));
+        //Set role Admin for account
+        user.setRole(Role.ADMIN.name());
+        try {
+            user = userRepository.save(user);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+        return userMapper.toUserResponse(user);
     }
 }

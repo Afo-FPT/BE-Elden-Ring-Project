@@ -20,9 +20,6 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "username")
-    private String username;
-
     @Column(name = "full_name")
     private String fullName;
 
@@ -52,8 +49,4 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     Cart cart;
-
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Feedback> feedbacks;
 }

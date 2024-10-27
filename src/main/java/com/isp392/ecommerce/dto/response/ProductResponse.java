@@ -1,5 +1,6 @@
 package com.isp392.ecommerce.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.isp392.ecommerce.dto.request.ProductVariantRequest;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductResponse {
     String productId;
     String name;
@@ -20,7 +22,8 @@ public class ProductResponse {
     Boolean status;
     String image;
     Integer stock;
-    Double price;
+    Float price;
+    Integer cateId;
     String cateName;
     List<ProductVariantResponse> productVariants; // Danh sách các kích thước và số lượng
 }

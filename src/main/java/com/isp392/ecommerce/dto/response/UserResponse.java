@@ -16,4 +16,6 @@ public class UserResponse {
     private String role;
     private String phone;
     private String address;
+    private boolean googleAccount;
+
 }

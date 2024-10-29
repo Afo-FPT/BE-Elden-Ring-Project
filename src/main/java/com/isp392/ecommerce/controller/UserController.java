@@ -1,10 +1,7 @@
 package com.isp392.ecommerce.controller;
 //import class
 
-import com.isp392.ecommerce.dto.request.ResetPasswordRequest;
-import com.isp392.ecommerce.dto.request.UpdatePasswordRequest;
-import com.isp392.ecommerce.dto.request.UserCreationRequest;
-import com.isp392.ecommerce.dto.request.UserUpdateRequest;
+import com.isp392.ecommerce.dto.request.*;
 import com.isp392.ecommerce.dto.response.ApiResponse;
 import com.isp392.ecommerce.dto.response.UserResponse;
 import com.isp392.ecommerce.entity.User;
@@ -66,10 +63,10 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
-    ApiResponse<String> forgotPassword(@RequestBody String email){
+    ApiResponse<String> forgotPassword(@RequestBody ForgotPassWordRequest request){
         return ApiResponse.<String>builder()
                 .message("Request forgot password successfully!")
-                .result(userService.forgotPassword(email))
+                .result(userService.forgotPassword(request.getEmail()))
                 .build();
     }
 
@@ -92,11 +89,11 @@ public class UserController {
         return userService.updateUser(userId, request);
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") String userId) {
-        userService.deleteUser(userId);
-        return "User has been deleted";
-    }
+//    @DeleteMapping("/{id}")
+//    public String deleteUser(@PathVariable("id") String userId) {
+//        userService.deleteUser(userId);
+//        return "User has been deleted";
+//    }
 
     @PostMapping("/admin/create")
     ResponseEntity<ApiResponse<UserResponse>> createAdmin(@Valid @RequestBody UserCreationRequest request){

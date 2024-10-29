@@ -169,9 +169,10 @@ public class UserService {
                 .build();
     }
 
-    public void deleteUser(String id) {
-        userRepository.deleteById(id);
-    }
+//    public void deleteUser(String id) {
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+//    }
 
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse createAdminAccount(UserCreationRequest request){

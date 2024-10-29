@@ -20,6 +20,7 @@ public class Product {
     @Column(name = "product_id", nullable = false, unique = true)
     private String productId;
     private String name;
+    @Column(name = "description", columnDefinition = "VARCHAR(MAX)")
     private String description;
     private boolean status;
     @Column(columnDefinition = "TEXT")

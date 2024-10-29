@@ -35,7 +35,7 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "VARCHAR(MAX)")
     private String address;
 
     private boolean googleAccount;

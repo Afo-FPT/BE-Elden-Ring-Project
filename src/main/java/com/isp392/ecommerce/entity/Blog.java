@@ -33,7 +33,7 @@ public class Blog {
     @Column(name = "content", columnDefinition = "VARCHAR(MAX)")
     String content;
 
-    @Column(name = "title")
+    @Column(name = "address", columnDefinition = "VARCHAR(MAX)")
     String title;
 
     @Temporal(TemporalType.DATE)

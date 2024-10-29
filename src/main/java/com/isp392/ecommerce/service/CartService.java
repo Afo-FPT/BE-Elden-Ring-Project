@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,7 +62,7 @@ public class CartService {
 
         // Kiểm tra xem sản phẩm với size này đã tồn tại trong giỏ hàng chưa
         for (CartItem item : cart.getCartItems()) {
-            if (item.getProduct().getProductId() == productId && item.getSize().getName().equals(size.getName())) {
+            if (Objects.equals(item.getProduct().getProductId(), productId) && item.getSize().getName().equals(size.getName())) {
                 item.setQuantity(request.getQuantity() + item.getQuantity());  // Cộng thêm số lượng
                 cartItemRepository.save(item);
                 productExistsInCart = true;

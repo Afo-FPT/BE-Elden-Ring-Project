@@ -49,6 +49,20 @@ public enum ErrorCode {
     DID_NOT_OWN_ORDER("DID_NOT_OWN_ORDER", "You did not own this order", HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_ENOUGH_STOCK("PRODUCT_NOT_ENOUGH_STOCK","Product not enough stock", HttpStatus.BAD_REQUEST),
     PAYMENT_ID_EXISTED("PAYMENT_ID_EXISTED", "Payment id existed", HttpStatus.BAD_REQUEST),
+    PRODUCT_IS_INACTIVE("PRODUCT_IS_INACTIVE","Product is inactive", HttpStatus.BAD_REQUEST),
+    ORDER_IS_PENDING("ORDER_IS_PENDING","The order is still pending", HttpStatus.BAD_REQUEST),
+    ORDER_IS_REJECTED("ORDER_IS_REJECTED","The order is rejected", HttpStatus.BAD_REQUEST),
+    ORDER_ALREADY_APPROVED("ORDER_ALREADY_APPROVED","Order is already approved", HttpStatus.BAD_REQUEST),
+    ORDER_ALREADY_REJECTED("ORDER_ALREADY_REJECTED","Order is already rejected", HttpStatus.BAD_REQUEST),
+    QUANTITY_GREATER_THAN_STOCK("QUANTITY_GREATER_THAN_STOCK", "Quantity add to cart must be less than or equal stock", HttpStatus.BAD_REQUEST),
+    ALREADY_APPROVED_REFUND_REQUEST("ALREADY_APPROVED_REFUND_REQUEST","The order is already refunded", HttpStatus.BAD_REQUEST),
+    PAYMENT_ID_INVALID("PAYMENT_ID_INVALID","Payment id is invalid", HttpStatus.BAD_REQUEST),
+    FAIL_TO_RETRIEVE_TOKEN("FAIL_TO_RETRIEVE_TOKEN","Fail to retrieve token", HttpStatus.BAD_REQUEST),
+    USER_INACTIVE("USER_INACTIVE","User is inactive", HttpStatus.FORBIDDEN),
+    LOGGED_BY_GOOGLE("LOGGED_BY_GOOGLE","Email is logged by google cannot change password", HttpStatus.BAD_REQUEST),
+    ALREADY_REQUEST_REFUNDED("ALREADY_REQUESTED_REFUND","Order already be requested a refund", HttpStatus.BAD_REQUEST),
+    REFUND_REQUEST_NOT_FOUND("REFUND_REQUEST_NOT_FOUND","Refund request not found", HttpStatus.NOT_FOUND),
+    PAYMENT_FAILED("PAYMENT_FAILED", "Payment failed", HttpStatus.BAD_REQUEST),
     ;
 
     String code;

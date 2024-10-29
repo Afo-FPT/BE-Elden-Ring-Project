@@ -138,6 +138,10 @@ public class OrderService {
     }
 
     private void decreaseProductStock(Product product, int quantity) {
+        //Check if product is active
+        if (!product.isStatus()) {
+            throw new AppException(ErrorCode.PRODUCT_IS_INACTIVE);
+        }
         //Check if product has enough stock
         int productStockRemaining = product.getStock() - quantity;
         if (productStockRemaining < 0)

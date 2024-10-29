@@ -52,4 +52,6 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
      List<OrderDetail> orderProducts;
 
+    @OneToOne(mappedBy = "order")
+    RefundRequest refundRequest;
 }

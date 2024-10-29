@@ -80,7 +80,7 @@ public class UserService {
         //Get current user who is login
         User user = getCurrentUser();
         //Check if the old password match the current
-        if (passwordEncoder().matches(request.getOldPassword(), user.getPassword())) {
+        if (!passwordEncoder().matches(request.getOldPassword(), user.getPassword())) {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
         //Check if the new password match the current

@@ -2,6 +2,7 @@ package com.isp392.ecommerce.controller;
 
 
 import com.isp392.ecommerce.dto.request.AddToCartRequest;
+import com.isp392.ecommerce.dto.request.AddToCartRequestWrapper;
 import com.isp392.ecommerce.dto.request.CreateCartRequest;
 import com.isp392.ecommerce.dto.request.UpdateQuantityRequest;
 import com.isp392.ecommerce.dto.response.ApiResponse;
@@ -35,11 +36,11 @@ public class CartController {
     @PostMapping("/{cartId}/add/{productId}")
     ApiResponse<CartResponse> addToCart(@PathVariable("cartId") String cartId,
                                         @PathVariable("productId") String productId,
-                                        @RequestBody AddToCartRequest request) {
+                                        @RequestBody AddToCartRequestWrapper request) {
 
         return ApiResponse.<CartResponse>builder()
                 .message("Add to cart successfully")
-                .result(cartService.addToCart(cartId, productId, request))
+                .result(cartService.addToCart(cartId, productId, request.getData()))
                 .build();
     }
 

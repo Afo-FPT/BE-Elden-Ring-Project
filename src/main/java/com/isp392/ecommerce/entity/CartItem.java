@@ -38,10 +38,10 @@ public class CartItem {
     @Column(name = "quantity", nullable = false)
     int quantity;
 
-    public String getCateName() {
-        return (product != null && product.getCategory() != null)
-                ? getProduct().getCategory().getCateName() : null;
-    }
+//    public String getCateName() {
+//        return (product != null && product.getCategory() != null)
+//                ? getProduct().getCategory().getCateName() : null;
+//    }
 
 }
 

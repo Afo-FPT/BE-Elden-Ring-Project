@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -22,6 +24,9 @@ public class SecurityConfig {
             "/product/**",
             "/blog/**",
             "/cart/**",
+            "/payment/**",
+            "/order/**",
+            "/refund/**"
 
     };
 
@@ -33,17 +38,17 @@ public class SecurityConfig {
         httpSecurity
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request ->
-                request.requestMatchers(PUBLIC_ENDPOINT).permitAll()
-                        .anyRequest().authenticated());
-
-        httpSecurity.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer
-                                .decoder(jwtDecoder))
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        request.requestMatchers(PUBLIC_ENDPOINT).permitAll()
+                                .anyRequest().authenticated())
+                .csrf(AbstractHttpConfigurer::disable)
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(jwtConfigurer ->
+                                        jwtConfigurer
+                                                .decoder(jwtDecoder)
+                                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 );
 
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }
 
@@ -58,5 +63,19 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    //Change SCOPE_ to ROLE_
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        //set prefix
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+
+        //convert
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
     }
 }

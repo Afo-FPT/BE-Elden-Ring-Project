@@ -18,7 +18,7 @@ public class OrderResponse{
     String address;
     String fullname;
     String email;
-    float totalPrice;
+    float total;
     String status;
     Date createdDate;
     List<OrderDetailResponse> orderDetails;

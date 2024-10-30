@@ -19,6 +19,5 @@ public class RefundRequestResponse {
     String refundReason;
     String refundReasonImage;
     String adminId;
-    String refundResponse;
     Date createDate;
 }

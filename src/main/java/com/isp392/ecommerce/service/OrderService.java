@@ -21,6 +21,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,12 +50,13 @@ public class OrderService {
                     .map(cartItem -> {
                         OrderDetail orderDetail = orderMapper.toOrderDetail(cartItem);
                         orderDetail.setOrder(order);
-                        //Snapshot product
-                        orderDetail.setProductName(cartItem.getProduct().getName());
-                        orderDetail.setQuantity(cartItem.getQuantity());
-                        orderDetail.setUnitPrice(cartItem.getProduct().getPrice());
                         //Get product
                         Product product = cartItem.getProduct();
+                        //Snapshot product
+                        orderDetail.setProductName(product.getName());
+                        orderDetail.setQuantity(cartItem.getQuantity());
+                        orderDetail.setUnitPrice(product.getPrice());
+                        orderDetail.setSize(cartItem.getSize().getName());
                         //Check if product has enough stock
                         decreaseProductStock(product, cartItem.getQuantity());
                         return orderDetail;
@@ -90,12 +92,19 @@ public class OrderService {
                 .quantity(request.getQuantity())
                 .total(request.getQuantity())
                 .build();
+        order.setPaymentId(request.getPaymentId());
         //Snapshot product
         orderDetail.setProductName(product.getName());
         orderDetail.setQuantity(request.getQuantity());
         orderDetail.setUnitPrice(product.getPrice());
-        order.getOrderProducts()
-                .add(orderDetail);
+        orderDetail.setSize(request.getSize());
+
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        orderDetails.add(orderDetail);
+        order.setOrderProducts(orderDetails);
+        //Remember Phone and address when user checkout
+        order.getUser().setAddress(order.getAddress());
+        order.getUser().setPhone(order.getPhone());
         order.setPaymentId(request.getPaymentId());
         //Save Order
         orderRepository.save(order);

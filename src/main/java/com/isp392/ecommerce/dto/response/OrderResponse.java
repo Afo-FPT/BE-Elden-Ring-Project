@@ -33,6 +33,7 @@ public class OrderResponse{
         String productName;
         float unitPrice;
         String description;
+        String size;
         float total;
         int quantity;
     }

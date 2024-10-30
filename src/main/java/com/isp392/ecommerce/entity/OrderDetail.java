@@ -29,6 +29,7 @@ public class OrderDetail {
     private float unitPrice;
     @Column(name = "description", columnDefinition = "VARCHAR(MAX)")
     private String description;
+    private String size;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

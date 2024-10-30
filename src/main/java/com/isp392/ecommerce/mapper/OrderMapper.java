@@ -21,12 +21,10 @@ public interface OrderMapper {
     @Mapping(source = "orderProducts", target = "orderDetails")
     OrderResponse toOrderResponse(Order order);
 
-    @Mapping(source = "product.productId", target = "productId")
-    OrderResponse.OrderDetailResponse toOrderDetailResponse(OrderDetail orderDetail);
-
     @Mapping(source = "product.name", target = "productName")
     @Mapping(source = "product.price", target = "unitPrice")
     @Mapping(source = "product.description", target = "description")
     @Mapping(expression = "java(cartItem.getProduct().getPrice() * cartItem.getQuantity())" , target = "total")
+    @Mapping(target = "size", ignore = true)
     OrderDetail toOrderDetail(CartItem cartItem);
 }

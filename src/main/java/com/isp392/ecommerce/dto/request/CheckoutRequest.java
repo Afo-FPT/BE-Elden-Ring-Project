@@ -13,6 +13,6 @@ public class CheckoutRequest {
     String phone;
     String address;
     String cartId;
-    float totalPrice;
+    float total;
     String paymentId;
 }

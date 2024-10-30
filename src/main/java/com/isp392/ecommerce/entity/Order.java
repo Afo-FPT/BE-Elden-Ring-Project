@@ -32,7 +32,7 @@ public class Order {
     Date createdDate;
 
     @Column(name = "total_price", nullable = false)
-    float totalPrice;
+    float total;
 
     @Column(name = "phone", length = 10)
     String phone;

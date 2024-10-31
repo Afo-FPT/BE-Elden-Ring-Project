@@ -40,13 +40,21 @@ public class User {
 
     private boolean googleAccount;
 
+    private boolean status;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Blog> blogs;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-    Cart cart;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cart cart;
+
+    @PrePersist
+    protected void onCreate(){
+        if (!this.status)
+            this.status = true;
+    }
 }

@@ -68,6 +68,9 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USERNAME_OR_PASSWORD_WRONG));
+        //check active user
+        if (!user.isStatus())
+            throw new AppException(ErrorCode.USER_INACTIVE);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated =  passwordEncoder.matches(request.getPassword(),
@@ -85,23 +88,27 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(String email, String fullName){
-        var checkUser = userRepository.findByEmail(email);
-        User user = User.builder()
-                .userId(checkUser.map(User::getUserId).orElse(null))
-                .fullName(fullName)
-                .email(email)
-                .role(Role.CUSTOMER.name())
-                .googleAccount(true)
-                .build();
-        if (checkUser.isPresent() && !checkUser.get().isGoogleAccount()) {
+        //Check if user exist
+        User checkUser = userRepository.findByEmail(email)
+                .orElseGet(() -> User.builder()
+                        .fullName(fullName)
+                        .email(email)
+                        .role(Role.CUSTOMER.name())
+                        .googleAccount(true)
+                        .status(true)
+                        .build());
+        //check if user is not google account
+        if (!checkUser.isGoogleAccount()) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }else if (checkUser.isEmpty()){
-            userRepository.save(user);
-        }
-        var token = generateToken(user);
+        }else if(!checkUser.isStatus()){
+            throw new AppException(ErrorCode.USER_INACTIVE);//if this email is not active
+        } else if(checkUser.getUserId() == null){
+            checkUser = userRepository.save(checkUser);
+        }//If email not exist yet
+        var token = generateToken(checkUser);
 
         return AuthenticationResponse.builder()
-                .user(userMapper.toUserResponse(user))
+                .user(userMapper.toUserResponse(checkUser))
                 .token(token)
                 .build();
     }

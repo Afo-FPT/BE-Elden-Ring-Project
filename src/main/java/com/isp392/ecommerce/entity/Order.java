@@ -51,7 +51,7 @@ public class Order {
     User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @OrderBy("name DESC")
+    @OrderBy("productName DESC")
     List<OrderDetail> orderProducts;
 
     @OneToOne(mappedBy = "order")

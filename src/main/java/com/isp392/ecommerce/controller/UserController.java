@@ -70,10 +70,12 @@ public class UserController {
                 .build();
     }
 
-
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    ApiResponse<List<UserResponse>> getAllUsers() {
+         return ApiResponse.<List<UserResponse>>builder()
+                 .message("Get all users successfully")
+                 .result(userService.getAllUsers())
+                 .build();
     }
 
     @PostMapping("/reset-password")
@@ -84,16 +86,21 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable("id") String userId, @RequestBody UserUpdateRequest request) {
-        return userService.updateUser(userId, request);
+    //Update user
+    @PutMapping("/{userId}")
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .message("Update user successfully!")
+                .result(userService.updateUser(userId, request))
+                .build();
     }
 
-//    @DeleteMapping("/{id}")
-//    public String deleteUser(@PathVariable("id") String userId) {
-//        userService.deleteUser(userId);
-//        return "User has been deleted";
-//    }
+    //Delete user
+    @DeleteMapping("/{userId}")
+    ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable String userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
 
     @PostMapping("/admin/create")
     ResponseEntity<ApiResponse<UserResponse>> createAdmin(@Valid @RequestBody UserCreationRequest request){

@@ -48,8 +48,10 @@ public class UserService {
     @Value("${spring.mail.username}")
     protected String SENDER_EMAIL;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
     }
 
     public User getUserById(String id) {// findById() return Optional DType
@@ -141,21 +143,20 @@ public class UserService {
         return simpleMailMessage;
     }
 
-    public User updateUser(String id, UserUpdateRequest request) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_EXISTED));
+        userMapper.updateUser(user, request);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
 
-//        User user = getUserById(id);
-//        if(!(request.getFullName().isEmpty() || request.getFullName().isBlank())){
-//            user.setFullName(request.getFullName());
-//        }else throw new AppException(ErrorCode.FULLNAMEEMPTY);
-//        if(!(request.getPhone().isEmpty() || request.getPhone().isBlank())){
-//            user.setPhone(request.getPhone());
-//        }else throw new AppException(ErrorCode.PHONEEMPTY);
-//        if(!(request.getAddress().isEmpty() || request.getAddress().isBlank())){
-//            user.setAddress(request.getAddress());
-//        }else throw new AppException(ErrorCode.ADDRESSEMPTY);
-//
-//        return userRepository.save(user);
-        return null;
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteUser(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setStatus(false);
+        userRepository.save(user);
     }
 
     private PasswordEncoder passwordEncoder() {
@@ -168,10 +169,6 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.EMAIL_EXISTED));
     }
 
-//    public void deleteUser(String id) {
-//        User user = userRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-//    }
 
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse createAdminAccount(UserCreationRequest request){

@@ -80,6 +80,7 @@ public class PaypalService {
                     cartItem.getProduct(),
                     cartItem.getQuantity(),
                     currency));
+            int n1 = 0, n2 = 0;
         }
 
         return createPayment(method, intent, description, cancelUrl, successUrl, amount, items);

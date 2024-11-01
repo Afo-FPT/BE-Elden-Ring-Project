@@ -65,6 +65,8 @@ public enum ErrorCode {
     PAYMENT_FAILED("PAYMENT_FAILED", "Payment failed", HttpStatus.BAD_REQUEST),
     PRODUCT_VARIANT_NOT_ENOUGH_STOCK("PRODUCT_VARIANT_NOT_ENOUGH_STOCK","Product variant not enough stock", HttpStatus.BAD_REQUEST),
 
+    QUANTITY_EXCEEDS_STOCK("QUANTITY_EXCEEDS_STOCK", "Quantity exceed stock", HttpStatus.BAD_REQUEST),
+    PRODUCT_VARIANT_NOT_FOUND("PRODUCT_VARIANT_NOT_FOUND", "Product variant not found", HttpStatus.NOT_FOUND),
     ;
 
     String code;

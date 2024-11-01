@@ -78,7 +78,7 @@ public class PaypalService {
                     .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
             int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
             if (productVariantStockRemaining < 0)
-                throw new AppException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
+                throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
             items.add(item(
                     cartItem.getProduct(),
                     cartItem.getQuantity(),

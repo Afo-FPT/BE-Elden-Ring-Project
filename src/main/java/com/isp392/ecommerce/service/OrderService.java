@@ -63,7 +63,9 @@ public class OrderService {
                                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
                         int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
                         if (productVariantStockRemaining < 0)
-                            throw new AppException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
+                            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
+                        //decrease product variant stock
+                        productVariant.setQuantity(productVariantStockRemaining);
                         //Decrease stock of product
                         product.setStock(productVariantStockRemaining);
                         productVariantRepository.save(productVariant);
@@ -101,6 +103,8 @@ public class OrderService {
         int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
         if (productVariantStockRemaining < 0)
             throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
+        //decrease product variant stock
+        productVariant.setQuantity(productVariantStockRemaining);
         //Create Order
         Order order = createOrderObject(request);
         OrderDetail orderDetail =OrderDetail.builder()

@@ -29,7 +29,7 @@ public class OrderResponse{
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class OrderDetailResponse {
         String orderDetailId;
-        int productId;
+        String productId;
         String productName;
         float unitPrice;
         String description;

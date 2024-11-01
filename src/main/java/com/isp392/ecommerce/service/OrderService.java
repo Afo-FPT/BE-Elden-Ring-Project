@@ -59,7 +59,7 @@ public class OrderService {
                         //Check if product has enough stock
                         decreaseProductStock(product, cartItem.getQuantity());
                         //Check if product variant has enough stock
-                        ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(cartItem.getSize(), product)
+                        ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(cartItem.getSize().getName(), product)
                                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
                         int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
                         if (productVariantStockRemaining < 0)
@@ -68,7 +68,6 @@ public class OrderService {
                         productVariant.setQuantity(productVariantStockRemaining);
                         //Decrease stock of product
                         product.setStock(productVariantStockRemaining);
-                        productVariantRepository.save(productVariant);
                         productRepository.save(product);
                         return orderDetail;
                     })
@@ -83,7 +82,6 @@ public class OrderService {
         order.setOrderProducts(orderDetails);
         //Save Order
         orderRepository.save(order);
-
         return CheckoutResponse.builder()
                 .order(OrderMapper.INSTANCE.toOrderResponse(order))
                 .build();
@@ -96,9 +94,8 @@ public class OrderService {
         //Check if product has enough stock
         decreaseProductStock(product, request.getQuantity());
         //Check if product variant has enough stock
-        Size size = sizeRepository.findByName(request.getSize())
-                                .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
-        ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(size, product)
+
+        ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(request.getSize(), product)
                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
         int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
         if (productVariantStockRemaining < 0)
@@ -118,7 +115,7 @@ public class OrderService {
         orderDetail.setProductName(product.getName());
         orderDetail.setQuantity(request.getQuantity());
         orderDetail.setUnitPrice(product.getPrice());
-        orderDetail.setSize(size.getName());
+        orderDetail.setSize(request.getSize());
 
         List<OrderDetail> orderDetails = new ArrayList<>();
         orderDetails.add(orderDetail);
@@ -128,9 +125,8 @@ public class OrderService {
         order.getUser().setPhone(order.getPhone());
         order.setPaymentId(request.getPaymentId());
         //Save Order
-        productVariantRepository.save(productVariant);
-        productRepository.save(product);
         orderRepository.save(order);
+        productRepository.save(product);
         //Map Order to OrderResponse
         return CheckoutResponse.builder()
                 .order(OrderMapper.INSTANCE.toOrderResponse(order))

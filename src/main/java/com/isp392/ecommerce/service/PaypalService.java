@@ -40,6 +40,7 @@ public class PaypalService {
     ProductVariantRepository productVariantRepository;
     SizeRepository sizeRepository;
 
+
     @NonFinal
     protected RestTemplate restTemplate = new RestTemplate();
 
@@ -74,7 +75,7 @@ public class PaypalService {
         Cart cart = cartRepository.findById(request.getCartId())
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
         for (CartItem cartItem : cart.getCartItems()) {
-            ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(cartItem.getSize(), cartItem.getProduct())
+            ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(cartItem.getSize().getName(), cartItem.getProduct())
                     .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
             int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
             if (productVariantStockRemaining < 0)
@@ -107,8 +108,7 @@ public class PaypalService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         //Check if product variant has enough stock
-        ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(sizeRepository.findByName(request.getSize())
-                        .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)), product)
+        ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(request.getSize(), product)
                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
         int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
         if (productVariantStockRemaining < 0)
@@ -275,6 +275,10 @@ public class PaypalService {
         order.getOrderProducts().forEach(orderDetail -> {
             Product product = orderDetail.getProduct();
             product.setStock(product.getStock() + orderDetail.getQuantity());
+
+            ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(orderDetail.getSize(), product)
+                    .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+            productVariant.setQuantity(productVariant.getQuantity() + orderDetail.getQuantity());
             productRepository.save(product);
         });
         orderRepository.save(order);

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, String> {
-    Optional<ProductVariant> findBySizeAndProduct(Size size, Product product);
+    Optional<ProductVariant> findBySizeNameAndProduct(String size_name, Product product);
     @Query("SELECT pv FROM ProductVariant pv WHERE pv.size.sizeId = :sizeId AND pv.product.productId = :productId")
     Optional<ProductVariant> findBySizeIdAndProductId(@Param("sizeId") int sizeId, @Param("productId") String productId);
 }

@@ -67,8 +67,6 @@ public class OrderService {
                             throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
                         //decrease product variant stock
                         productVariant.setQuantity(productVariantStockRemaining);
-                        //Decrease stock of product
-                        productVariant.setQuantity(productVariantStockRemaining);
 
                         return orderDetail;
                     })
@@ -98,7 +96,6 @@ public class OrderService {
         //Check if product has enough stock
         decreaseProductStock(product, request.getQuantity());
         //Check if product variant has enough stock
-
         ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(request.getSize(), product)
                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
         int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();

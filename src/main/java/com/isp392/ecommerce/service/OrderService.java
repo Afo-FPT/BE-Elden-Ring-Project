@@ -56,6 +56,7 @@ public class OrderService {
                         orderDetail.setQuantity(cartItem.getQuantity());
                         orderDetail.setUnitPrice(product.getPrice());
                         orderDetail.setSize(cartItem.getSize().getName());
+                        orderDetail.setProduct(product);
                         //Check if product has enough stock
                         decreaseProductStock(product, cartItem.getQuantity());
                         //Check if product variant has enough stock
@@ -67,8 +68,8 @@ public class OrderService {
                         //decrease product variant stock
                         productVariant.setQuantity(productVariantStockRemaining);
                         //Decrease stock of product
-                        product.setStock(productVariantStockRemaining);
-                        productRepository.save(product);
+                        productVariant.setQuantity(productVariantStockRemaining);
+
                         return orderDetail;
                     })
                     .collect(Collectors.toList());
@@ -76,6 +77,9 @@ public class OrderService {
             User user = cart.getUser();
             //Remove relation between cart and user in user before delete cart
             user.setCart(null);
+        //Remember Phone and address when user checkout
+        order.getUser().setAddress(order.getAddress());
+        order.getUser().setPhone(order.getPhone());
             userRepository.save(user);
             cartRepository.delete(cart);
 
@@ -179,6 +183,7 @@ public class OrderService {
             product.setStatus(false);
         //Decrease stock of product
         product.setStock(productStockRemaining);
+        productRepository.save(product);
     }
 
     private Order createOrderObject(CheckoutRequest request) {

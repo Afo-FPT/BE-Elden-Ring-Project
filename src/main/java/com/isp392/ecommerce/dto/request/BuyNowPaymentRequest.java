@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class BuyNowPaymentRequest {
     float total;
     String productId;
-    int sizeId;
+    String size;
     int quantity;
 }

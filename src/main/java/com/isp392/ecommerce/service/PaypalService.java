@@ -74,7 +74,7 @@ public class PaypalService {
         Cart cart = cartRepository.findById(request.getCartId())
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
         for (CartItem cartItem : cart.getCartItems()) {
-            ProductVariant productVariant = productVariantRepository.findBySize(cartItem.getSize())
+            ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(cartItem.getSize(), cartItem.getProduct())
                     .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
             int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
             if (productVariantStockRemaining < 0)
@@ -107,8 +107,8 @@ public class PaypalService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         //Check if product variant has enough stock
-        ProductVariant productVariant = productVariantRepository.findBySize(sizeRepository.findById(request.getSizeId())
-                        .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)))
+        ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(sizeRepository.findByName(request.getSize())
+                        .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)), product)
                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
         int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
         if (productVariantStockRemaining < 0)

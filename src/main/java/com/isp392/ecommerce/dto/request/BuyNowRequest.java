@@ -17,7 +17,7 @@ public class BuyNowRequest {
     String address;
     float total;
     String productId;
-    int sizeId;
+    String size;
     int quantity;
     String paymentId;
 }

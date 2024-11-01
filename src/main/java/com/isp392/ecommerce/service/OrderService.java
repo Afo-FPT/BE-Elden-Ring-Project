@@ -59,7 +59,7 @@ public class OrderService {
                         //Check if product has enough stock
                         decreaseProductStock(product, cartItem.getQuantity());
                         //Check if product variant has enough stock
-                        ProductVariant productVariant = productVariantRepository.findBySize(cartItem.getSize())
+                        ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(cartItem.getSize(), product)
                                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
                         int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
                         if (productVariantStockRemaining < 0)
@@ -96,9 +96,9 @@ public class OrderService {
         //Check if product has enough stock
         decreaseProductStock(product, request.getQuantity());
         //Check if product variant has enough stock
-        Size size = sizeRepository.findById(request.getSizeId())
+        Size size = sizeRepository.findByName(request.getSize())
                                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
-        ProductVariant productVariant = productVariantRepository.findBySize(size)
+        ProductVariant productVariant = productVariantRepository.findBySizeAndProduct(size, product)
                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
         int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
         if (productVariantStockRemaining < 0)

@@ -63,6 +63,8 @@ public enum ErrorCode {
     ALREADY_REQUEST_REFUNDED("ALREADY_REQUESTED_REFUND","Order already be requested a refund", HttpStatus.BAD_REQUEST),
     REFUND_REQUEST_NOT_FOUND("REFUND_REQUEST_NOT_FOUND","Refund request not found", HttpStatus.NOT_FOUND),
     PAYMENT_FAILED("PAYMENT_FAILED", "Payment failed", HttpStatus.BAD_REQUEST),
+    PRODUCT_VARIANT_NOT_ENOUGH_STOCK("PRODUCT_VARIANT_NOT_ENOUGH_STOCK","Product variant not enough stock", HttpStatus.BAD_REQUEST),
+
     ;
 
     String code;

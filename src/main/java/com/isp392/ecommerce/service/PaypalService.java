@@ -3,17 +3,13 @@ package com.isp392.ecommerce.service;
 import com.isp392.ecommerce.dto.request.BuyNowPaymentRequest;
 import com.isp392.ecommerce.dto.request.CheckoutPaymentRequest;
 import com.isp392.ecommerce.dto.response.ApiResponse;
-import com.isp392.ecommerce.entity.Cart;
-import com.isp392.ecommerce.entity.CartItem;
+import com.isp392.ecommerce.entity.*;
 import com.isp392.ecommerce.entity.Order;
-import com.isp392.ecommerce.entity.Product;
 import com.isp392.ecommerce.enums.Status;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
-import com.isp392.ecommerce.repository.CartRepository;
-import com.isp392.ecommerce.repository.OrderRepository;
+import com.isp392.ecommerce.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.isp392.ecommerce.repository.ProductRepository;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
@@ -41,6 +37,8 @@ public class PaypalService {
     CartRepository cartRepository;
     OrderRepository orderRepository;
     ProductRepository productRepository;
+    ProductVariantRepository productVariantRepository;
+    SizeRepository sizeRepository;
 
     @NonFinal
     protected RestTemplate restTemplate = new RestTemplate();
@@ -76,11 +74,15 @@ public class PaypalService {
         Cart cart = cartRepository.findById(request.getCartId())
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
         for (CartItem cartItem : cart.getCartItems()) {
+            ProductVariant productVariant = productVariantRepository.findBySize(cartItem.getSize())
+                    .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+            int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
+            if (productVariantStockRemaining < 0)
+                throw new AppException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
             items.add(item(
                     cartItem.getProduct(),
                     cartItem.getQuantity(),
                     currency));
-            int n1 = 0, n2 = 0;
         }
 
         return createPayment(method, intent, description, cancelUrl, successUrl, amount, items);
@@ -104,12 +106,13 @@ public class PaypalService {
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        //Check if product is active
-        if (!product.isStatus())
-            throw new AppException(ErrorCode.PRODUCT_IS_INACTIVE);
-        //Check if product has enough stock
-        if (request.getQuantity() > product.getStock())
-            throw new AppException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
+        //Check if product variant has enough stock
+        ProductVariant productVariant = productVariantRepository.findBySize(sizeRepository.findById(request.getSizeId())
+                        .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED)))
+                .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+        int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
+        if (productVariantStockRemaining < 0)
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
         items.add(item(product, request.getQuantity(), currency));
         return createPayment(method, intent, description, cancelUrl, successUrl, amount, items);
     }

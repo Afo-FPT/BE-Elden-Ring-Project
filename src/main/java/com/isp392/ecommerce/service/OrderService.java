@@ -10,10 +10,7 @@ import com.isp392.ecommerce.enums.Status;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
 import com.isp392.ecommerce.mapper.OrderMapper;
-import com.isp392.ecommerce.repository.CartRepository;
-import com.isp392.ecommerce.repository.OrderRepository;
-import com.isp392.ecommerce.repository.ProductRepository;
-import com.isp392.ecommerce.repository.UserRepository;
+import com.isp392.ecommerce.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,6 +33,8 @@ public class OrderService {
     UserService userService;
     ProductRepository productRepository;
     OrderMapper orderMapper;
+    ProductVariantRepository productVariantRepository;
+    SizeRepository sizeRepository;
 
     public CheckoutResponse checkout(CheckoutRequest request) {
         //create new order
@@ -59,6 +58,16 @@ public class OrderService {
                         orderDetail.setSize(cartItem.getSize().getName());
                         //Check if product has enough stock
                         decreaseProductStock(product, cartItem.getQuantity());
+                        //Check if product variant has enough stock
+                        ProductVariant productVariant = productVariantRepository.findBySize(cartItem.getSize())
+                                .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+                        int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
+                        if (productVariantStockRemaining < 0)
+                            throw new AppException(ErrorCode.PRODUCT_NOT_ENOUGH_STOCK);
+                        //Decrease stock of product
+                        product.setStock(productVariantStockRemaining);
+                        productVariantRepository.save(productVariant);
+                        productRepository.save(product);
                         return orderDetail;
                     })
                     .collect(Collectors.toList());
@@ -84,6 +93,14 @@ public class OrderService {
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         //Check if product has enough stock
         decreaseProductStock(product, request.getQuantity());
+        //Check if product variant has enough stock
+        Size size = sizeRepository.findById(request.getSizeId())
+                                .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+        ProductVariant productVariant = productVariantRepository.findBySize(size)
+                .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+        int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
+        if (productVariantStockRemaining < 0)
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
         //Create Order
         Order order = createOrderObject(request);
         OrderDetail orderDetail =OrderDetail.builder()
@@ -97,7 +114,7 @@ public class OrderService {
         orderDetail.setProductName(product.getName());
         orderDetail.setQuantity(request.getQuantity());
         orderDetail.setUnitPrice(product.getPrice());
-        orderDetail.setSize(request.getSize());
+        orderDetail.setSize(size.getName());
 
         List<OrderDetail> orderDetails = new ArrayList<>();
         orderDetails.add(orderDetail);
@@ -107,6 +124,8 @@ public class OrderService {
         order.getUser().setPhone(order.getPhone());
         order.setPaymentId(request.getPaymentId());
         //Save Order
+        productVariantRepository.save(productVariant);
+        productRepository.save(product);
         orderRepository.save(order);
         //Map Order to OrderResponse
         return CheckoutResponse.builder()
@@ -160,7 +179,6 @@ public class OrderService {
             product.setStatus(false);
         //Decrease stock of product
         product.setStock(productStockRemaining);
-        productRepository.save(product);
     }
 
     private Order createOrderObject(CheckoutRequest request) {

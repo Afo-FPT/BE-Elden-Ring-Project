@@ -10,10 +10,12 @@ import lombok.*;
 
 public class UserResponse {
     private String userId;
-    private String username;
     private String email;
     private String fullName;
     private String role;
     private String phone;
     private String address;
+    private boolean googleAccount;
+    private boolean status;
+
 }

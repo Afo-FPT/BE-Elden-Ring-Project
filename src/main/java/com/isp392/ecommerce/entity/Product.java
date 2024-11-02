@@ -17,9 +17,10 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "product_id", nullable = false, unique = true)
+    @Column(name = "product_id", nullable = false)
     private String productId;
     private String name;
+    @Column(name = "description", columnDefinition = "VARCHAR(MAX)")
     private String description;
     private boolean status;
     @Column(columnDefinition = "TEXT")
@@ -27,7 +28,7 @@ public class Product {
     private int stock;
     private float price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     @JsonBackReference
     private Category category;
@@ -35,7 +36,6 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore // Ngăn chặn tuần hoàn khi ánh xạ ngược
     private List<ProductVariant> productVariants;
-
 
 }
 

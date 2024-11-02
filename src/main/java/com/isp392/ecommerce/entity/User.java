@@ -20,9 +20,6 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "username")
-    private String username;
-
     @Column(name = "full_name")
     private String fullName;
 
@@ -32,16 +29,18 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "phone", unique = true)
+    @Column(name = "phone")
     private String phone;
 
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "VARCHAR(MAX)")
     private String address;
 
     private boolean googleAccount;
+
+    private boolean status;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Blog> blogs;
@@ -49,11 +48,13 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-    Cart cart;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cart cart;
 
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Feedback> feedbacks;
+    @PrePersist
+    protected void onCreate(){
+        if (!this.status)
+            this.status = true;
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +28,7 @@ public class CartService {
     UserRepository userRepository;
     ProductRepository productRepository;
     SizeRepository sizeRepository;  // Thêm SizeRepository
+    ProductVariantRepository productVariantRepository;
 
     public CartResponse createCart(String userId) {
         User user = userRepository.findById(userId)
@@ -57,12 +59,23 @@ public class CartService {
         Size size = sizeRepository.findByName(request.getSizeName())  // Tìm size theo tên
                 .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
 
+        ProductVariant productVariant = productVariantRepository.findBySizeIdAndProductId(size.getSizeId(), productId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND));
+
         boolean productExistsInCart = false;
 
         // Kiểm tra xem sản phẩm với size này đã tồn tại trong giỏ hàng chưa
         for (CartItem item : cart.getCartItems()) {
-            if (item.getProduct().getProductId() == productId && item.getSize().getName().equals(size.getName())) {
-                item.setQuantity(request.getQuantity() + item.getQuantity());  // Cộng thêm số lượng
+            if (Objects.equals(item.getProduct().getProductId(), productId) && item.getSize().getName().equals(size.getName())) {
+
+                int newQuantity = item.getQuantity() + request.getQuantity();
+
+                // Kiểm tra nếu tổng số lượng vượt quá stock
+                if (newQuantity > productVariant.getQuantity()) {
+                    throw new AppException(ErrorCode.QUANTITY_EXCEEDS_STOCK);
+                }
+
+                item.setQuantity(newQuantity);  // Cập nhật số lượng
                 cartItemRepository.save(item);
                 productExistsInCart = true;
                 break;
@@ -71,6 +84,9 @@ public class CartService {
 
         // Nếu sản phẩm với size chưa tồn tại, thêm mới
         if (!productExistsInCart) {
+            if (request.getQuantity() > productVariant.getQuantity()) {
+                throw new AppException(ErrorCode.QUANTITY_EXCEEDS_STOCK);
+            }
             CartItem cartItem = cartItemRepository.save(CartItem.builder()
                     .cart(cart)
                     .product(product)
@@ -105,8 +121,15 @@ public class CartService {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
 
+        ProductVariant productVariant = productVariantRepository.findBySizeIdAndProductId(cartItem.getSize().getSizeId(), cartItem.getProduct().getProductId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND));
+
         // Cập nhật số lượng của CartItem
-        cartItem.setQuantity(request.getQuantity());
+        if(request.getQuantity() > 0&& request.getQuantity() <= productVariant.getQuantity())
+            cartItem.setQuantity(request.getQuantity());
+        else
+            throw new AppException(ErrorCode.QUANTITY_EXCEEDS_STOCK);
+
         cartItemRepository.save(cartItem);
 
         // Trả về CartItemResponse

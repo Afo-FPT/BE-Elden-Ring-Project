@@ -10,10 +10,7 @@ import com.isp392.ecommerce.enums.Status;
 import com.isp392.ecommerce.exception.AppException;
 import com.isp392.ecommerce.exception.ErrorCode;
 import com.isp392.ecommerce.mapper.OrderMapper;
-import com.isp392.ecommerce.repository.CartRepository;
-import com.isp392.ecommerce.repository.OrderRepository;
-import com.isp392.ecommerce.repository.ProductRepository;
-import com.isp392.ecommerce.repository.UserRepository;
+import com.isp392.ecommerce.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +33,8 @@ public class OrderService {
     UserService userService;
     ProductRepository productRepository;
     OrderMapper orderMapper;
+    ProductVariantRepository productVariantRepository;
+    SizeRepository sizeRepository;
 
     public CheckoutResponse checkout(CheckoutRequest request) {
         //create new order
@@ -49,14 +49,25 @@ public class OrderService {
                     .map(cartItem -> {
                         OrderDetail orderDetail = orderMapper.toOrderDetail(cartItem);
                         orderDetail.setOrder(order);
-                        //Snapshot product
-                        orderDetail.setProductName(cartItem.getProduct().getName());
-                        orderDetail.setQuantity(cartItem.getQuantity());
-                        orderDetail.setUnitPrice(cartItem.getProduct().getPrice());
                         //Get product
                         Product product = cartItem.getProduct();
+                        //Snapshot product
+                        orderDetail.setProductName(product.getName());
+                        orderDetail.setQuantity(cartItem.getQuantity());
+                        orderDetail.setUnitPrice(product.getPrice());
+                        orderDetail.setSize(cartItem.getSize().getName());
+                        orderDetail.setProduct(product);
                         //Check if product has enough stock
                         decreaseProductStock(product, cartItem.getQuantity());
+                        //Check if product variant has enough stock
+                        ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(cartItem.getSize().getName(), product)
+                                .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+                        int productVariantStockRemaining = productVariant.getQuantity() - cartItem.getQuantity();
+                        if (productVariantStockRemaining < 0)
+                            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
+                        //decrease product variant stock
+                        productVariant.setQuantity(productVariantStockRemaining);
+
                         return orderDetail;
                     })
                     .collect(Collectors.toList());
@@ -64,13 +75,15 @@ public class OrderService {
             User user = cart.getUser();
             //Remove relation between cart and user in user before delete cart
             user.setCart(null);
+        //Remember Phone and address when user checkout
+        order.getUser().setAddress(order.getAddress());
+        order.getUser().setPhone(order.getPhone());
             userRepository.save(user);
             cartRepository.delete(cart);
 
         order.setOrderProducts(orderDetails);
         //Save Order
         orderRepository.save(order);
-
         return CheckoutResponse.builder()
                 .order(OrderMapper.INSTANCE.toOrderResponse(order))
                 .build();
@@ -82,6 +95,14 @@ public class OrderService {
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         //Check if product has enough stock
         decreaseProductStock(product, request.getQuantity());
+        //Check if product variant has enough stock
+        ProductVariant productVariant = productVariantRepository.findBySizeNameAndProduct(request.getSize(), product)
+                .orElseThrow(() -> new AppException(ErrorCode.SIZE_NOT_EXISTED));
+        int productVariantStockRemaining = productVariant.getQuantity() - request.getQuantity();
+        if (productVariantStockRemaining < 0)
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_ENOUGH_STOCK);
+        //decrease product variant stock
+        productVariant.setQuantity(productVariantStockRemaining);
         //Create Order
         Order order = createOrderObject(request);
         OrderDetail orderDetail =OrderDetail.builder()
@@ -90,15 +111,23 @@ public class OrderService {
                 .quantity(request.getQuantity())
                 .total(request.getQuantity())
                 .build();
+        order.setPaymentId(request.getPaymentId());
         //Snapshot product
         orderDetail.setProductName(product.getName());
         orderDetail.setQuantity(request.getQuantity());
         orderDetail.setUnitPrice(product.getPrice());
-        order.getOrderProducts()
-                .add(orderDetail);
+        orderDetail.setSize(request.getSize());
+
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        orderDetails.add(orderDetail);
+        order.setOrderProducts(orderDetails);
+        //Remember Phone and address when user checkout
+        order.getUser().setAddress(order.getAddress());
+        order.getUser().setPhone(order.getPhone());
         order.setPaymentId(request.getPaymentId());
         //Save Order
         orderRepository.save(order);
+        productRepository.save(product);
         //Map Order to OrderResponse
         return CheckoutResponse.builder()
                 .order(OrderMapper.INSTANCE.toOrderResponse(order))
@@ -138,6 +167,10 @@ public class OrderService {
     }
 
     private void decreaseProductStock(Product product, int quantity) {
+        //Check if product is active
+        if (!product.isStatus()) {
+            throw new AppException(ErrorCode.PRODUCT_IS_INACTIVE);
+        }
         //Check if product has enough stock
         int productStockRemaining = product.getStock() - quantity;
         if (productStockRemaining < 0)

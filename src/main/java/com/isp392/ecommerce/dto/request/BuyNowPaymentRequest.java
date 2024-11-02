@@ -1,23 +1,17 @@
 package com.isp392.ecommerce.dto.request;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BuyNowRequest {
-    String fullname;
-    String email;
-    String phone;
-    String address;
+public class BuyNowPaymentRequest {
     float total;
     String productId;
     String size;
     int quantity;
-    String paymentId;
 }

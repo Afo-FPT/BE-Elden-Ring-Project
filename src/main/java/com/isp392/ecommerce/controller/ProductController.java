@@ -62,6 +62,14 @@ public class ProductController {
                 .message("Delete product successfully")
                 .build();
     }
+
+    @GetMapping("/shop")
+    ApiResponse<List<ProductResponse>> getAllActiveProducts() {
+        return ApiResponse.<List<ProductResponse>>builder()
+                .message("Get all active product successfully")
+                .result(productService.getAllActiveProducts())
+                .build();
+    }
 }
 
 

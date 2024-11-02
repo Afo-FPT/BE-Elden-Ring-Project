@@ -21,13 +21,15 @@ public class OrderDetail {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     private String productName;
     private float unitPrice;
+    @Column(name = "description", columnDefinition = "VARCHAR(MAX)")
     private String description;
+    private String size;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

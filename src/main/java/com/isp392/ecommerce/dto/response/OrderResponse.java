@@ -18,7 +18,7 @@ public class OrderResponse{
     String address;
     String fullname;
     String email;
-    float totalPrice;
+    float total;
     String status;
     Date createdDate;
     List<OrderDetailResponse> orderDetails;
@@ -29,10 +29,11 @@ public class OrderResponse{
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class OrderDetailResponse {
         String orderDetailId;
-        int productId;
+        String productId;
         String productName;
         float unitPrice;
         String description;
+        String size;
         float total;
         int quantity;
     }

@@ -6,13 +6,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CheckoutRequest {
-    String fullname;
-    String email;
-    String phone;
-    String address;
-    String cartId;
-    float total;
-    String paymentId;
+public class PaymentRequest {
+    String orderId;
 }

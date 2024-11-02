@@ -1,10 +1,7 @@
 package com.isp392.ecommerce.controller;
 //import class
 
-import com.isp392.ecommerce.dto.request.ResetPasswordRequest;
-import com.isp392.ecommerce.dto.request.UpdatePasswordRequest;
-import com.isp392.ecommerce.dto.request.UserCreationRequest;
-import com.isp392.ecommerce.dto.request.UserUpdateRequest;
+import com.isp392.ecommerce.dto.request.*;
 import com.isp392.ecommerce.dto.response.ApiResponse;
 import com.isp392.ecommerce.dto.response.UserResponse;
 import com.isp392.ecommerce.entity.User;
@@ -15,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 /*
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -64,21 +63,19 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
-    ApiResponse<String> forgotPassword(@RequestBody String email){
+    ApiResponse<String> forgotPassword(@RequestBody ForgotPassWordRequest request){
         return ApiResponse.<String>builder()
                 .message("Request forgot password successfully!")
-                .result(userService.forgotPassword(email))
+                .result(userService.forgotPassword(request.getEmail()))
                 .build();
     }
 
-//    @GetMapping("/{id}")
-//    public User getUser(@PathVariable("id") String userId) {
-//        return userService.getUserById(userId);
-//    }
-
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    ApiResponse<List<UserResponse>> getAllUsers() {
+         return ApiResponse.<List<UserResponse>>builder()
+                 .message("Get all users successfully")
+                 .result(userService.getAllUsers())
+                 .build();
     }
 
     @PostMapping("/reset-password")
@@ -89,15 +86,30 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable("id") String userId, @RequestBody UserUpdateRequest request) {
-        return userService.updateUser(userId, request);
+    //Update user
+    @PutMapping("/{userId}")
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .message("Update user successfully!")
+                .result(userService.updateUser(userId, request))
+                .build();
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") String userId) {
+    //Delete user
+    @DeleteMapping("/{userId}")
+    ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
-        return "User has been deleted";
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/admin/create")
+    ResponseEntity<ApiResponse<UserResponse>> createAdmin(@Valid @RequestBody UserCreationRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.<UserResponse>builder()
+                        .code("201")
+                        .message("Create admin successfully!")
+                        .result(userService.createAdminAccount(request))
+                        .build());
     }
 
 }

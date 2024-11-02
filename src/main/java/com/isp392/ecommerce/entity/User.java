@@ -20,7 +20,7 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    @Column(name = "full_name")
+    @Column(name = "full_name", columnDefinition = "NVARCHAR(MAX)")
     private String fullName;
 
     @Column(name = "role")
@@ -35,7 +35,7 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "address", columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "address", columnDefinition = "NVARCHAR(MAX)")
     private String address;
 
     private boolean googleAccount;

@@ -37,7 +37,7 @@ public class Order {
     @Column(name = "phone", length = 10)
     String phone;
 
-    @Column(name = "address", columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "address", columnDefinition = "NVARCHAR(MAX)")
     String address;
 
     @Column(name = "email")

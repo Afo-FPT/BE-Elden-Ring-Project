@@ -43,7 +43,7 @@ public class Order {
     @Column(name = "email")
     String email;
 
-    @Column(name = "fullname")
+    @Column(name = "fullname", columnDefinition = "NVARCHAR(MAX)")
     String fullname;
 
     @ManyToOne(fetch = FetchType.LAZY)

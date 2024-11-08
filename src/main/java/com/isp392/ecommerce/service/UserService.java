@@ -97,9 +97,11 @@ public class UserService {
 
     public String forgotPassword(String email) {
         //Check username
-        if (!userRepository.existsByEmail(email)) {
-            throw new AppException(ErrorCode.EMAIL_NOT_EXISTED);
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOT_EXISTED));
+        //Check if google account
+        if (user.isGoogleAccount())
+            throw new AppException(ErrorCode.LOGGED_BY_GOOGLE);
         Random random = new Random();
         int otp;
         do {

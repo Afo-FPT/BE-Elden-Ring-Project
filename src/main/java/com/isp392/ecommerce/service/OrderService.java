@@ -211,4 +211,13 @@ public class OrderService {
             throw new AppException(ErrorCode.PAYMENT_ID_EXISTED);
         }
     }
+    public OrderResponse updateOrderStatus(String orderId, Status status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        order.setStatus(status.name());
+        orderRepository.save(order);
+
+        return orderMapper.toOrderResponse(order);
+    }
 }

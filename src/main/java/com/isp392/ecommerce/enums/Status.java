@@ -5,4 +5,6 @@ public enum Status {
     APPROVED,
     REJECTED,
     REFUNDED,
+    IN_DELIVERY,
+    DELIVERED
 }

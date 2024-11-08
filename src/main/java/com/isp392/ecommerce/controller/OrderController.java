@@ -2,9 +2,11 @@ package com.isp392.ecommerce.controller;
 
 import com.isp392.ecommerce.dto.request.BuyNowRequest;
 import com.isp392.ecommerce.dto.request.CheckoutRequest;
+import com.isp392.ecommerce.dto.request.UpdateDeliveryStatusRequest;
 import com.isp392.ecommerce.dto.response.ApiResponse;
 import com.isp392.ecommerce.dto.response.CheckoutResponse;
 import com.isp392.ecommerce.dto.response.OrderResponse;
+import com.isp392.ecommerce.enums.Status;
 import com.isp392.ecommerce.service.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +58,23 @@ public class OrderController {
     ApiResponse<OrderResponse> getOrderById(@PathVariable String orderId) {
         return ApiResponse.<OrderResponse>builder()
                 .result(orderService.getOrder(orderId))
+                .build();
+    }
+    @PostMapping("/start-delivery")
+    public ApiResponse<OrderResponse> startDelivery(@RequestBody UpdateDeliveryStatusRequest request) {
+        OrderResponse updatedOrder = orderService.updateOrderStatus(request.getOrderId(), Status.IN_DELIVERY);
+        return ApiResponse.<OrderResponse>builder()
+                .message("Order status updated to IN_DELIVERY.")
+                .result(updatedOrder)
+                .build();
+    }
+
+    @PostMapping("/mark-delivered")
+    public ApiResponse<OrderResponse> markDelivered(@RequestBody UpdateDeliveryStatusRequest request) {
+        OrderResponse updatedOrder = orderService.updateOrderStatus(request.getOrderId(), Status.DELIVERED);
+        return ApiResponse.<OrderResponse>builder()
+                .message("Order status updated to DELIVERED.")
+                .result(updatedOrder)
                 .build();
     }
 }

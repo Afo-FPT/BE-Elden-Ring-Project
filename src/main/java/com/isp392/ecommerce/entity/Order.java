@@ -37,13 +37,13 @@ public class Order {
     @Column(name = "phone", length = 10)
     String phone;
 
-    @Column(name = "address", columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "address", columnDefinition = "NVARCHAR(MAX)")
     String address;
 
     @Column(name = "email")
     String email;
 
-    @Column(name = "fullname")
+    @Column(name = "fullname", columnDefinition = "NVARCHAR(MAX)")
     String fullname;
 
     @ManyToOne(fetch = FetchType.LAZY)

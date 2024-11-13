@@ -30,10 +30,10 @@ public class Blog {
     @Column(name = "image", columnDefinition = "VARCHAR(MAX)")
     String image;
 
-    @Column(name = "content", columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "content", columnDefinition = "NVARCHAR(MAX)")
     String content;
 
-    @Column(name = "address", columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "title", columnDefinition = "NVARCHAR(MAX)")
     String title;
 
     @Temporal(TemporalType.DATE)

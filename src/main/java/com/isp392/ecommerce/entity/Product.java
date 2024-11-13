@@ -20,7 +20,7 @@ public class Product {
     @Column(name = "product_id", nullable = false)
     private String productId;
     private String name;
-    @Column(name = "description", columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
     private String description;
     private boolean status;
     @Column(columnDefinition = "TEXT")
